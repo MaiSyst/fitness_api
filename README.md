@@ -1,2 +1,3 @@
-# fitness_api
-API REST fitness application for CRUD
+# MAIFITNESS (MF)
+#### Fitness(Gym) application for management
+#### powered by MaiSYST
