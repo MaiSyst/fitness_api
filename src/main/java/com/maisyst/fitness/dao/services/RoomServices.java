@@ -1,20 +1,17 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.ICoachServices;
 import com.maisyst.fitness.dao.interfaces.IRoomServices;
-import com.maisyst.fitness.dao.repositories.CoachRepository;
-import com.maisyst.fitness.dao.repositories.RoomRepository;
-import com.maisyst.fitness.models.CoachModel;
-import com.maisyst.fitness.models.RoomModel;
+import com.maisyst.fitness.dao.repositories.IRoomRepository;
 import com.maisyst.fitness.utils.MaiResponse;
+import com.maisyst.fitness.models.RoomModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class RoomServices implements IRoomServices {
-    private final RoomRepository roomRepository;
-    public RoomServices(RoomRepository roomRepository){
+    private final IRoomRepository roomRepository;
+    public RoomServices(IRoomRepository roomRepository){
         this.roomRepository=roomRepository;
     }
 

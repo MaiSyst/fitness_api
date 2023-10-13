@@ -1,7 +1,7 @@
 package com.maisyst.fitness.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.sql.Date;
 
@@ -24,9 +24,43 @@ public class SubscribeModel {
     @JoinColumn(name = "subscription_id")
     private SubscriptionModel subscription;
     public SubscribeModel() {}
+
+    public SubscribeModel(Date dateStart, Date dateEnd, boolean isActive, CustomerModel customer, SubscriptionModel subscription) {
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.isActive = isActive;
+        this.customer = customer;
+        this.subscription = subscription;
+    }
+
+    public SubscribeModel(int subscribeId, Date dateStart, Date dateEnd, boolean isActive, CustomerModel customer, SubscriptionModel subscription) {
+        this.subscribeId = subscribeId;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.isActive = isActive;
+        this.customer = customer;
+        this.subscription = subscription;
+    }
+
+    public SubscribeModel(int subscribeId, Date dateStart, Date dateEnd, boolean isActive) {
+        this.subscribeId = subscribeId;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.isActive = isActive;
+    }
+
+    public SubscribeModel(int subscribeId, Date dateStart, Date dateEnd, boolean isActive, CustomerModel customer) {
+        this.subscribeId = subscribeId;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.isActive = isActive;
+        this.customer = customer;
+    }
+
     public int getSubscribeId() {
         return subscribeId;
     }
+
     public Date getDateStart() {
         return dateStart;
     }
@@ -52,4 +86,11 @@ public class SubscribeModel {
         this.dateEnd = dateEnd;
     }
 
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

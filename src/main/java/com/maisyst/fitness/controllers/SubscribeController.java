@@ -1,8 +1,6 @@
 package com.maisyst.fitness.controllers;
 
-import com.maisyst.fitness.dao.services.ActivityServices;
 import com.maisyst.fitness.dao.services.SubscribeServices;
-import com.maisyst.fitness.models.ActivityModel;
 import com.maisyst.fitness.models.SubscribeModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +28,9 @@ public class SubscribeController {
            return new ResponseEntity<>(response.getMessage(),response.getStatus());
        }
     }
-    @GetMapping("/api/fetchAll")
+    @GetMapping("/fetchAll")
     public ResponseEntity<List<SubscribeModel>> fetchAll(){
-        var response=subscribeServices.fetchAll();
+        var response=subscribeServices.findAllWithSubscriptionAndCustomer();
         if(response.getStatus()== HttpStatus.OK){
             return new ResponseEntity<>(response.getData(),response.getStatus());
         }else{

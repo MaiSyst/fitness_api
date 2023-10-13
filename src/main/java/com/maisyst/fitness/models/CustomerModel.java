@@ -1,5 +1,6 @@
 package com.maisyst.fitness.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -21,6 +22,7 @@ public class CustomerModel {
     @Column
     private String address;
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     private Set<SubscribeModel> subscribes=new HashSet<>();
     public CustomerModel(){
 
@@ -33,6 +35,14 @@ public class CustomerModel {
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
+    }
+
+    public CustomerModel(int customerId, String firstName, String lastName, Date yearOfBirth, String address) {
+        this.customerId = customerId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.yearOfBirth = yearOfBirth;
+        this.address = address;
     }
 
     public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address, Set<SubscribeModel> subscribes) {

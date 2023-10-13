@@ -3,7 +3,6 @@ package com.maisyst.fitness.models;
 import com.maisyst.fitness.utils.TypeSubscription;
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +16,7 @@ public class SubscriptionModel {
     @Column(nullable = false)
     private double price;
     @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private TypeSubscription type=TypeSubscription.GOLD;
     @ManyToMany(mappedBy = "subscriptions",fetch = FetchType.LAZY)
     private Set<ActivityModel> activities=new HashSet<>();
@@ -32,6 +31,21 @@ public class SubscriptionModel {
         this.type = type;
         this.activities = activities;
         this.subscribes = subscribes;
+    }
+
+    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, Set<ActivityModel> activities) {
+        this.subscriptionId = subscriptionId;
+        this.label = label;
+        this.price = price;
+        this.type = type;
+        this.activities = activities;
+    }
+
+    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type) {
+        this.subscriptionId = subscriptionId;
+        this.label = label;
+        this.price = price;
+        this.type = type;
     }
 
     public SubscriptionModel(String label, double price, TypeSubscription type, Set<ActivityModel> activities, Set<SubscribeModel> subscribes) {

@@ -1,8 +1,6 @@
 package com.maisyst.fitness.controllers;
 
-import com.maisyst.fitness.dao.services.ActivityServices;
 import com.maisyst.fitness.dao.services.PlanningServices;
-import com.maisyst.fitness.models.ActivityModel;
 import com.maisyst.fitness.models.PlanningModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

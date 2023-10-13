@@ -1,20 +1,17 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.ICoachServices;
 import com.maisyst.fitness.dao.interfaces.IPlanningServices;
-import com.maisyst.fitness.dao.repositories.CoachRepository;
-import com.maisyst.fitness.dao.repositories.PlanningRepository;
-import com.maisyst.fitness.models.CoachModel;
-import com.maisyst.fitness.models.PlanningModel;
+import com.maisyst.fitness.dao.repositories.IPlanningRepository;
 import com.maisyst.fitness.utils.MaiResponse;
+import com.maisyst.fitness.models.PlanningModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class PlanningServices implements IPlanningServices {
-    private final PlanningRepository planningRepository;
-    public PlanningServices(PlanningRepository planningRepository){
+    private final IPlanningRepository planningRepository;
+    public PlanningServices(IPlanningRepository planningRepository){
         this.planningRepository=planningRepository;
     }
 

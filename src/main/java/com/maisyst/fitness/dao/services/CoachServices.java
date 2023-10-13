@@ -1,9 +1,9 @@
 package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.interfaces.ICoachServices;
-import com.maisyst.fitness.dao.repositories.CoachRepository;
-import com.maisyst.fitness.models.CoachModel;
+import com.maisyst.fitness.dao.repositories.ICoachRepository;
 import com.maisyst.fitness.utils.MaiResponse;
+import com.maisyst.fitness.models.CoachModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +11,9 @@ import java.util.List;
 
 @Service
 public class CoachServices implements ICoachServices {
-    private final CoachRepository coachRepository;
+    private final ICoachRepository coachRepository;
 
-    public CoachServices(CoachRepository coachRepository) {
+    public CoachServices(ICoachRepository coachRepository) {
         this.coachRepository = coachRepository;
     }
 
@@ -79,8 +79,7 @@ public class CoachServices implements ICoachServices {
            var response=coachRepository.findAll();
             return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
         } catch (Exception ex) {
-           throw new RuntimeException(ex);
-           // return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+           return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -101,6 +100,14 @@ public class CoachServices implements ICoachServices {
             return new MaiResponse.MaiSuccess<>("Activities was deleted", HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    public MaiResponse<List<CoachModel>> fetchWithAll() {
+       try {
+           var response=coachRepository.findAll();
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+           return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

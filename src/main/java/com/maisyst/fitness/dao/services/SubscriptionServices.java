@@ -1,12 +1,11 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.ICoachServices;
 import com.maisyst.fitness.dao.interfaces.ISubscriptionServices;
-import com.maisyst.fitness.dao.repositories.CoachRepository;
-import com.maisyst.fitness.dao.repositories.SubscriptionRepository;
-import com.maisyst.fitness.models.CoachModel;
-import com.maisyst.fitness.models.SubscriptionModel;
+import com.maisyst.fitness.dao.repositories.ISubscriptionRepository;
 import com.maisyst.fitness.utils.MaiResponse;
+import com.maisyst.fitness.utils.MaiUID;
+import com.maisyst.fitness.utils.TypeSubscription;
+import com.maisyst.fitness.models.SubscriptionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +13,17 @@ import java.util.List;
 
 @Service
 public class SubscriptionServices implements ISubscriptionServices {
-    private final SubscriptionRepository subscriptionRepository;
-    public SubscriptionServices(SubscriptionRepository subscriptionRepository){
+    private final ISubscriptionRepository subscriptionRepository;
+    public SubscriptionServices(ISubscriptionRepository subscriptionRepository){
         this.subscriptionRepository=subscriptionRepository;
     }
 
     @Override
     public MaiResponse<SubscriptionModel> insert(SubscriptionModel model) {
         try {
+            model.setSubscriptionId(MaiUID.generate());
+            model.setLabel(model.getType().getValue());
+            model.setPrice(getPriceSubscription(model.getType()));
             return new MaiResponse.MaiSuccess<>(subscriptionRepository.save(model), HttpStatus.OK);
 
         } catch (Exception ex) {
@@ -64,7 +66,7 @@ public class SubscriptionServices implements ISubscriptionServices {
 
     @Override
     public MaiResponse<String> insertMany(List<SubscriptionModel> models) {
-          try {
+        try {
             subscriptionRepository.saveAll(models);
             return new MaiResponse.MaiSuccess<>("Subscriptions has been added", HttpStatus.OK);
         } catch (Exception ex) {
@@ -92,6 +94,27 @@ public class SubscriptionServices implements ISubscriptionServices {
                 return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
             } else {
                 return new MaiResponse.MaiError<>("Subscription id don't exist.", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+     private double getPriceSubscription(TypeSubscription type){
+        return switch (type){
+            case GOLD -> 100_000;
+            case PRIME -> 60_000;
+            default -> 15_000;
+        };
+    }
+
+    @Override
+    public MaiResponse<SubscriptionModel> findByType(TypeSubscription typeSubscription) {
+        try {
+            var response = subscriptionRepository.findByType(typeSubscription);
+            if (response.isPresent()) {
+                return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
+            } else {
+                return new MaiResponse.MaiError<>("Subscription type don't exist.", HttpStatus.NOT_FOUND);
             }
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

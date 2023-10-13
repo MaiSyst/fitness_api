@@ -1,7 +1,7 @@
 package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.interfaces.IActivityServices;
-import com.maisyst.fitness.dao.repositories.ActivityRepository;
+import com.maisyst.fitness.dao.repositories.IActivityRepository;
 import com.maisyst.fitness.models.ActivityModel;
 import com.maisyst.fitness.utils.MaiResponse;
 import org.springframework.http.HttpStatus;
@@ -11,20 +11,11 @@ import java.util.List;
 
 @Service
 public class ActivityServices implements IActivityServices {
-    private final ActivityRepository activityRepository;
+    private final IActivityRepository activityRepository;
 
-    public ActivityServices(ActivityRepository activityRepository) {
+    public ActivityServices(IActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
     }
-
-//    @Override
-//    public List<ActivityModel> findByLabel(String label) {
-////        JdbcTemplate jdbcTemplate=new JdbcTemplate();
-////        RowMapper<ActivityModel> rowMapper=(rs,rows)->new ActivityModel(rs.getInt("id"),rs.getString("label"),rs.getString("description"),rs.getInt("coach_id"));
-//
-////        return jdbcTemplate.query("SELECT * FROM activity WHERE label LIKE '%"+label+"%'",rowMapper);
-//        return null;
-//    }
 
     @Override
     public MaiResponse<ActivityModel> insert(ActivityModel model) {
