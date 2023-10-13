@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.List;
 
+import static com.maisyst.fitness.utils.MaiUtils.getDateSubscription;
+import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
+
 @Service
 public class CustomerServices implements ICustomerServices {
     private final ICustomerRepository customerRepository;
@@ -41,13 +44,13 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<CustomerModel> insertWithSubscription(TypeSubscription typeSubscription, int activity_id, CustomerModel model) {
+    public MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription, int activity_id, CustomerModel model) {
         try {
             var subscriptionResponse = subscriptionServices.findByType(typeSubscription);
             var activityModelMaiResponse = activityServices.findById(activity_id);
             if (subscriptionResponse.getStatus() == HttpStatus.OK && activityModelMaiResponse.getStatus() == HttpStatus.OK) {
                 var customerResponse = customerRepository.save(model);
-                var moment = getDateSubscription(typeSubscription);
+                var moment = getDateSubscription(stringToTypeSubscription(typeSubscription));
                 subscriptionResponse.getData().getActivities().add(activityModelMaiResponse.getData());
                 var subscribeRes = subscribeServices.insert(new SubscribeModel(moment[0], moment[1], true, customerResponse, subscriptionResponse.getData()));
                 if (subscribeRes.getStatus() == HttpStatus.OK) {
@@ -98,18 +101,5 @@ public class CustomerServices implements ICustomerServices {
     @Override
     public MaiResponse<CustomerModel> update(Integer id, CustomerModel model) {
         return null;
-    }
-
-    private Date[] getDateSubscription(TypeSubscription type) {
-        var date = new java.util.Date();
-        return switch (type) {
-            case GOLD -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addYears(date, 1))};
-            case PRIME -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addMonths(date, 6))};
-            default -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addMonths(date, 1))};
-        };
-    }
-
-    private Date getDateSql(java.util.Date date) {
-        return new Date(date.getTime());
     }
 }

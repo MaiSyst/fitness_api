@@ -5,5 +5,5 @@ import com.maisyst.fitness.utils.TypeSubscription;
 import com.maisyst.fitness.models.CustomerModel;
 
 public non-sealed interface ICustomerServices extends IServices<CustomerModel,Integer>{
-    MaiResponse<CustomerModel> insertWithSubscription(TypeSubscription typeSubscription,int activity_id, CustomerModel model);
+    MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription,int activity_id, CustomerModel model);
 }

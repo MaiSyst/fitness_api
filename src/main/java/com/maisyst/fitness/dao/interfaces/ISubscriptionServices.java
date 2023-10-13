@@ -5,5 +5,5 @@ import com.maisyst.fitness.utils.TypeSubscription;
 import com.maisyst.fitness.models.SubscriptionModel;
 
 public non-sealed interface ISubscriptionServices extends IServices<SubscriptionModel,String>{
-    MaiResponse<SubscriptionModel> findByType(TypeSubscription typeSubscription);
+    MaiResponse<SubscriptionModel> findByType(String typeSubscription);
 }

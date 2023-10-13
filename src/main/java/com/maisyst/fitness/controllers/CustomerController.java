@@ -19,7 +19,7 @@ public class CustomerController {
 
     @PostMapping("/add/{subscription_type}/{activity_id}")
     public ResponseEntity<String> add(@PathVariable String subscription_type,@PathVariable int activity_id,@RequestBody CustomerModel model){
-        var response=customerServices.insertWithSubscription(stringToTypeSubscription(subscription_type),activity_id,model);
+        var response=customerServices.insertWithSubscription(subscription_type,activity_id,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
        }else{

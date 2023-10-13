@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
+
 @Service
 public class SubscriptionServices implements ISubscriptionServices {
     private final ISubscriptionRepository subscriptionRepository;
@@ -108,9 +110,9 @@ public class SubscriptionServices implements ISubscriptionServices {
     }
 
     @Override
-    public MaiResponse<SubscriptionModel> findByType(TypeSubscription typeSubscription) {
+    public MaiResponse<SubscriptionModel> findByType(String type) {
         try {
-            var response = subscriptionRepository.findByType(typeSubscription);
+            var response = subscriptionRepository.findByType(stringToTypeSubscription(type));
             if (response.isPresent()) {
                 return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
             } else {
@@ -120,4 +122,5 @@ public class SubscriptionServices implements ISubscriptionServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
 }

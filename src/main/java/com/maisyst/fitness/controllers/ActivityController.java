@@ -22,9 +22,9 @@ public class ActivityController {
     }
 
 
-    @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody ActivityModel model) {
-        var response = activityServices.insert(model);
+    @PostMapping("/add/{subscription_type}")
+    public ResponseEntity<String> add(@PathVariable String subscription_type,@RequestBody ActivityModel model) {
+        var response = activityServices.insertWithSubscription(subscription_type,model);
 
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Activity was added.", HttpStatus.OK);

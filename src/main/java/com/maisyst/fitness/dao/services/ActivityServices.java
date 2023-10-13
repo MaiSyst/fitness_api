@@ -5,6 +5,7 @@ import com.maisyst.fitness.dao.repositories.IActivityRepository;
 import com.maisyst.fitness.models.ActivityModel;
 import com.maisyst.fitness.utils.MaiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,15 +13,35 @@ import java.util.List;
 @Service
 public class ActivityServices implements IActivityServices {
     private final IActivityRepository activityRepository;
+    private final SubscriptionServices subscriptionServices;
+    private final JdbcTemplate jdbcTemplate;
 
-    public ActivityServices(IActivityRepository activityRepository) {
+    public ActivityServices(IActivityRepository activityRepository, SubscriptionServices subscriptionServices, JdbcTemplate jdbcTemplate) {
         this.activityRepository = activityRepository;
+        this.subscriptionServices = subscriptionServices;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public MaiResponse<ActivityModel> insert(ActivityModel model) {
         try {
             return new MaiResponse.MaiSuccess<>(activityRepository.save(model), HttpStatus.OK);
+
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public MaiResponse<ActivityModel> insertWithSubscription(String type, ActivityModel model) {
+       try {
+           var subscriptionResponse = subscriptionServices.findByType(type);
+           if (subscriptionResponse.getStatus() == HttpStatus.OK) {
+               model.getSubscriptions().add(subscriptionResponse.getData());
+               return new MaiResponse.MaiSuccess<>(activityRepository.save(model), HttpStatus.OK);
+           }else{
+                return new MaiResponse.MaiError<>(subscriptionResponse.getMessage(), HttpStatus.NOT_FOUND);
+           }
 
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

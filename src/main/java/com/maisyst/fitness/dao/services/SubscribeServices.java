@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
+
 @Service
 public class SubscribeServices implements ISubscribeServices {
     private final ISubscribeRepository subscribeRepository;
@@ -136,13 +138,5 @@ public class SubscribeServices implements ISubscribeServices {
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
-    }
-
-    private TypeSubscription stringToTypeSubscription(String type) {
-        return switch (type.toLowerCase()) {
-            case "gold" -> TypeSubscription.GOLD;
-            case "prime" -> TypeSubscription.PRIME;
-            default -> TypeSubscription.STANDARD;
-        };
     }
 }

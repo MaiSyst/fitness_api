@@ -1,5 +1,6 @@
 package com.maisyst.fitness.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -27,6 +28,7 @@ public class ActivityModel {
                     @JoinColumn(name = "subscription_id", referencedColumnName = "subscription_id")
             }
     )
+    @JsonIgnore
     private Set<SubscriptionModel> subscriptions=new HashSet<>();
     @OneToMany(mappedBy = "activity")
     private Set<PlanningModel> plannings=new HashSet<>();
