@@ -49,7 +49,15 @@ public class CustomerServices implements ICustomerServices {
             var subscriptionResponse = subscriptionServices.findByType(typeSubscription);
             var activityModelMaiResponse = activityServices.findById(activity_id);
             if (subscriptionResponse.getStatus() == HttpStatus.OK && activityModelMaiResponse.getStatus() == HttpStatus.OK) {
-                var customerResponse = customerRepository.save(model);
+                //Date yearOfBirth, String address,String email,String password
+                var customerResponse = customerRepository.save(new CustomerModel(
+                        model.getFirstName(),
+                        model.getLastName(),
+                        model.getYearOfBirth(),
+                        model.getAddress(),
+                        model.getEmail(),
+                        model.getPassword()
+                ));
                 var moment = getDateSubscription(stringToTypeSubscription(typeSubscription));
                 subscriptionResponse.getData().getActivities().add(activityModelMaiResponse.getData());
                 var subscribeRes = subscribeServices.insert(new SubscribeModel(moment[0], moment[1], true, customerResponse, subscriptionResponse.getData()));
@@ -59,7 +67,7 @@ public class CustomerServices implements ICustomerServices {
                     return new MaiResponse.MaiError<>(subscribeRes.getMessage(), HttpStatus.NOT_FOUND);
                 }
             } else {
-                var error = subscriptionResponse.getMessage()==null||subscriptionResponse.getMessage().isBlank()? activityModelMaiResponse.getMessage() : subscriptionResponse.getMessage();
+                var error = subscriptionResponse.getMessage() == null || subscriptionResponse.getMessage().isBlank() ? activityModelMaiResponse.getMessage() : subscriptionResponse.getMessage();
                 return new MaiResponse.MaiError<>(error, HttpStatus.NOT_FOUND);
             }
 
@@ -70,12 +78,31 @@ public class CustomerServices implements ICustomerServices {
 
     @Override
     public MaiResponse<String> deleteById(Integer id) {
-        return null;
+        try {
+            var customerResponse = customerRepository.findById(id);
+            if (customerResponse.isPresent()) {
+                customerRepository.deleteById(id);
+                return new MaiResponse.MaiSuccess<>("Customer have been deleted", HttpStatus.OK);
+            } else {
+                return new MaiResponse.MaiError<>("Customer haven't been deleted", HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
     public MaiResponse<CustomerModel> findById(Integer id) {
-        return null;
+       try {
+            var customerResponse = customerRepository.findById(id);
+            if (customerResponse.isPresent()) {
+                return new MaiResponse.MaiSuccess<>(customerResponse.get(), HttpStatus.OK);
+            } else {
+                return new MaiResponse.MaiError<>("Customer don't exist", HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

@@ -5,9 +5,9 @@ import com.maisyst.fitness.utils.MaiResponse;
 import java.util.List;
 
 public sealed interface IServices<T,TID> permits IActivityServices, ICoachServices,
-        ICustomerServices, ISubscribeServices,
+        ICustomerServices,
         ISubscriptionServices,
-        IPlanningServices, IRoomServices {
+        IRoomServices {
     MaiResponse<T> insert(T model);
 
     MaiResponse<String> deleteById(TID id);

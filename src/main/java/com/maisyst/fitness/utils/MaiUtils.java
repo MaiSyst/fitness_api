@@ -20,6 +20,13 @@ public final class MaiUtils {
             default -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addMonths(date, 1))};
         };
     }
+    public static double getPriceSubscription(TypeSubscription type){
+        return switch (type){
+            case GOLD -> 100_000;
+            case PRIME -> 60_000;
+            default -> 15_000;
+        };
+    }
 
     public static Date getDateSql(java.util.Date date) {
         return new Date(date.getTime());

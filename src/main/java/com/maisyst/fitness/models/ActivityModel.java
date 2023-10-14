@@ -3,8 +3,9 @@ package com.maisyst.fitness.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.List;
 
 @Entity(name = "activity")
 public class ActivityModel {
@@ -17,7 +18,7 @@ public class ActivityModel {
     @Column(nullable = false)
     private String description;
     @OneToMany(mappedBy = "activityCoach", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<CoachModel> coach = new HashSet<>();
+    private List<CoachModel> coach = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "concern",
@@ -29,15 +30,15 @@ public class ActivityModel {
             }
     )
     @JsonIgnore
-    private Set<SubscriptionModel> subscriptions=new HashSet<>();
+    private List<SubscriptionModel> subscriptions=new ArrayList<>();
     @OneToMany(mappedBy = "activity")
-    private Set<PlanningModel> plannings=new HashSet<>();
+    private List<PlanningModel> plannings=new ArrayList<>();
 
     public ActivityModel() {
     }
 
 
-    public ActivityModel(int activityId, String label, String description, Set<CoachModel> coach, Set<SubscriptionModel> subscriptions, Set<PlanningModel> plannings) {
+    public ActivityModel(int activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions, List<PlanningModel> plannings) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
@@ -46,12 +47,26 @@ public class ActivityModel {
         this.plannings = plannings;
     }
 
-    public ActivityModel(String label, String description, Set<CoachModel> coach, Set<SubscriptionModel> subscriptions, Set<PlanningModel> plannings) {
+    public ActivityModel(String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions, List<PlanningModel> plannings) {
         this.label = label;
         this.description = description;
         this.coach = coach;
         this.subscriptions = subscriptions;
         this.plannings = plannings;
+    }
+
+    public ActivityModel(int activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions) {
+        this.activityId = activityId;
+        this.label = label;
+        this.description = description;
+        this.coach = coach;
+        this.subscriptions = subscriptions;
+    }
+
+    public ActivityModel(int activityId, String label, String description) {
+        this.activityId = activityId;
+        this.label = label;
+        this.description = description;
     }
 
     public int getActivityId() {
@@ -74,11 +89,11 @@ public class ActivityModel {
         this.description = description;
     }
 
-    public Set<CoachModel> getCoach() {
+    public List<CoachModel> getCoach() {
         return coach;
     }
 
-    public void setCoach(Set<CoachModel> coach) {
+    public void setCoach(List<CoachModel> coach) {
         this.coach = coach;
     }
 
@@ -86,19 +101,19 @@ public class ActivityModel {
         this.activityId = activityId;
     }
 
-    public Set<SubscriptionModel> getSubscriptions() {
+    public List<SubscriptionModel> getSubscriptions() {
         return subscriptions;
     }
 
-    public void setSubscriptions(Set<SubscriptionModel> subscriptions) {
+    public void setSubscriptions(List<SubscriptionModel> subscriptions) {
         this.subscriptions = subscriptions;
     }
 
-    public Set<PlanningModel> getPlannings() {
+    public List<PlanningModel> getPlannings() {
         return plannings;
     }
 
-    public void setPlannings(Set<PlanningModel> plannings) {
+    public void setPlannings(List<PlanningModel> plannings) {
         this.plannings = plannings;
     }
 }

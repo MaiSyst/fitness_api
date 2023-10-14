@@ -4,11 +4,9 @@ import com.maisyst.fitness.dao.services.PlanningServices;
 import com.maisyst.fitness.models.PlanningModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,9 +17,9 @@ public class PlanningController {
         this.planningServices=planningServices;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> add(PlanningModel model){
-         var response=planningServices.insert(model);
+    @PostMapping("/add/{activity_id}/{room_id}")
+    public ResponseEntity<String> add(@PathVariable int activity_id,@PathVariable String room_id,@RequestBody PlanningModel model){
+         var response=planningServices.insert(activity_id,room_id,model);
        if(response.getStatus()== HttpStatus.OK) {
            return new ResponseEntity<>("Planning was added with Success", HttpStatus.OK);
        }else{
@@ -30,11 +28,11 @@ public class PlanningController {
     }
     @GetMapping("/fetchAll")
     public ResponseEntity<List<PlanningModel>> fetchAll(){
-        var response=planningServices.fetchAll();
+        var response=planningServices.findAllWithActivityAndRoom();
         if(response.getStatus()== HttpStatus.OK){
             return new ResponseEntity<>(response.getData(),response.getStatus());
         }else{
-            return new ResponseEntity<>(null,response.getStatus());
+            return new ResponseEntity<>(new ArrayList<>(),response.getStatus());
         }
     }
 }

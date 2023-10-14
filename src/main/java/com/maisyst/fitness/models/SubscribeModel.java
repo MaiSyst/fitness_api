@@ -2,6 +2,8 @@ package com.maisyst.fitness.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Date;
 
@@ -19,9 +21,11 @@ public class SubscribeModel {
     private boolean isActive=false;
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CustomerModel customer;
     @ManyToOne
     @JoinColumn(name = "subscription_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private SubscriptionModel subscription;
     public SubscribeModel() {}
 
@@ -57,6 +61,10 @@ public class SubscribeModel {
         this.customer = customer;
     }
 
+    public void setSubscribeId(int subscribeId) {
+        this.subscribeId = subscribeId;
+    }
+
     public int getSubscribeId() {
         return subscribeId;
     }
@@ -90,7 +98,7 @@ public class SubscribeModel {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 }

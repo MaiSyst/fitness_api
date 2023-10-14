@@ -2,22 +2,29 @@ package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.interfaces.ISubscriptionServices;
 import com.maisyst.fitness.dao.repositories.ISubscriptionRepository;
+import com.maisyst.fitness.models.ActivityModel;
+import com.maisyst.fitness.models.SubscribeModel;
 import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.utils.MaiUID;
+import com.maisyst.fitness.utils.MaiUtils;
 import com.maisyst.fitness.utils.TypeSubscription;
 import com.maisyst.fitness.models.SubscriptionModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.maisyst.fitness.utils.MaiUtils.getPriceSubscription;
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
 @Service
 public class SubscriptionServices implements ISubscriptionServices {
     private final ISubscriptionRepository subscriptionRepository;
-    public SubscriptionServices(ISubscriptionRepository subscriptionRepository){
+    private final JdbcTemplate jdbcTemplate;
+    public SubscriptionServices(ISubscriptionRepository subscriptionRepository, JdbcTemplate jdbcTemplate){
         this.subscriptionRepository=subscriptionRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -60,6 +67,7 @@ public class SubscriptionServices implements ISubscriptionServices {
     @Override
     public MaiResponse<List<SubscriptionModel>> fetchAll() {
          try {
+
             return new MaiResponse.MaiSuccess<>(subscriptionRepository.findAll(), HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -100,13 +108,6 @@ public class SubscriptionServices implements ISubscriptionServices {
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
-     private double getPriceSubscription(TypeSubscription type){
-        return switch (type){
-            case GOLD -> 100_000;
-            case PRIME -> 60_000;
-            default -> 15_000;
-        };
     }
 
     @Override

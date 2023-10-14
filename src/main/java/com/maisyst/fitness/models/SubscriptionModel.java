@@ -3,8 +3,8 @@ package com.maisyst.fitness.models;
 import com.maisyst.fitness.utils.TypeSubscription;
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "subscription")
 public class SubscriptionModel {
@@ -19,12 +19,12 @@ public class SubscriptionModel {
     @Column(nullable = false,unique = true)
     private TypeSubscription type=TypeSubscription.GOLD;
     @ManyToMany(mappedBy = "subscriptions",fetch = FetchType.LAZY)
-    private Set<ActivityModel> activities=new HashSet<>();
+    private List<ActivityModel> activities=new ArrayList<>();
     @OneToMany(mappedBy = "subscription")
-    private Set<SubscribeModel> subscribes=new HashSet<>();
+    private List<SubscribeModel> subscribes=new ArrayList<>();
     public SubscriptionModel() {}
 
-    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, Set<ActivityModel> activities, Set<SubscribeModel> subscribes) {
+    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
         this.subscriptionId = subscriptionId;
         this.label = label;
         this.price = price;
@@ -33,7 +33,7 @@ public class SubscriptionModel {
         this.subscribes = subscribes;
     }
 
-    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, Set<ActivityModel> activities) {
+    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, List<ActivityModel> activities) {
         this.subscriptionId = subscriptionId;
         this.label = label;
         this.price = price;
@@ -48,14 +48,13 @@ public class SubscriptionModel {
         this.type = type;
     }
 
-    public SubscriptionModel(String label, double price, TypeSubscription type, Set<ActivityModel> activities, Set<SubscribeModel> subscribes) {
+    public SubscriptionModel(String label, double price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
         this.label = label;
         this.price = price;
         this.type = type;
         this.activities = activities;
         this.subscribes = subscribes;
     }
-
     public String getSubscriptionId() {
         return subscriptionId;
     }
@@ -76,19 +75,19 @@ public class SubscriptionModel {
         this.label = label;
     }
 
-    public Set<ActivityModel> getActivities() {
+    public List<ActivityModel> getActivities() {
         return activities;
     }
 
-    public Set<SubscribeModel> getSubscribes() {
+    public List<SubscribeModel> getSubscribes() {
         return subscribes;
     }
 
-    public void setActivities(Set<ActivityModel> activities) {
+    public void setActivities(List<ActivityModel> activities) {
         this.activities = activities;
     }
 
-    public void setSubscribes(Set<SubscribeModel> subscribes) {
+    public void setSubscribes(List<SubscribeModel> subscribes) {
         this.subscribes = subscribes;
     }
 

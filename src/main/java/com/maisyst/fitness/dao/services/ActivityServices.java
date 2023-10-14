@@ -2,13 +2,18 @@ package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.interfaces.IActivityServices;
 import com.maisyst.fitness.dao.repositories.IActivityRepository;
-import com.maisyst.fitness.models.ActivityModel;
+import com.maisyst.fitness.models.*;
 import com.maisyst.fitness.utils.MaiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
 @Service
 public class ActivityServices implements IActivityServices {
@@ -34,14 +39,14 @@ public class ActivityServices implements IActivityServices {
 
     @Override
     public MaiResponse<ActivityModel> insertWithSubscription(String type, ActivityModel model) {
-       try {
-           var subscriptionResponse = subscriptionServices.findByType(type);
-           if (subscriptionResponse.getStatus() == HttpStatus.OK) {
-               model.getSubscriptions().add(subscriptionResponse.getData());
-               return new MaiResponse.MaiSuccess<>(activityRepository.save(model), HttpStatus.OK);
-           }else{
+        try {
+            var subscriptionResponse = subscriptionServices.findByType(type);
+            if (subscriptionResponse.getStatus() == HttpStatus.OK) {
+                model.getSubscriptions().add(subscriptionResponse.getData());
+                return new MaiResponse.MaiSuccess<>(activityRepository.save(model), HttpStatus.OK);
+            } else {
                 return new MaiResponse.MaiError<>(subscriptionResponse.getMessage(), HttpStatus.NOT_FOUND);
-           }
+            }
 
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -82,7 +87,7 @@ public class ActivityServices implements IActivityServices {
             if (response.isPresent()) {
                 return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
             } else {
-                return new MaiResponse.MaiError<>("Activity don't exist.", HttpStatus.NOT_FOUND);
+                return new MaiResponse.MaiError<>("Activity is empty.", HttpStatus.NO_CONTENT);
             }
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -92,7 +97,41 @@ public class ActivityServices implements IActivityServices {
     @Override
     public MaiResponse<List<ActivityModel>> fetchAll() {
         try {
-            return new MaiResponse.MaiSuccess<>(activityRepository.findAll(), HttpStatus.OK);
+            final String query = "SELECT * from activity";
+            var response = jdbcTemplate.query(query, (rs, rows) -> {
+                final String queryCoach = "SELECT * from coach WHERE coach.activity_id ="+rs.getInt("activity_id");
+                final String querySub = "SELECT * from subscription,concern WHERE concern.subscription_id = subscription.subscription_id and concern.activity_id="+rs.getInt("activity_id");
+                final String queryPlanning = "SELECT * from planning,room WHERE room.room_id=planning.room_id and planning.activity_id ="+rs.getInt("activity_id");
+                List<CoachModel> coachModel = jdbcTemplate.query(queryCoach, (rsCoach, rows1) ->
+                        new CoachModel(
+                                rsCoach.getInt("coach_id"),
+                                rsCoach.getString("first_name"),
+                                rsCoach.getString("last_name"),
+                                rsCoach.getString("phone"),
+                                rsCoach.getString("address"),
+                                rsCoach.getString("speciality")
+                        )
+                );
+                List<SubscriptionModel> subscriptionModel = jdbcTemplate.query(querySub, (rsSub, rows1) ->
+                        new SubscriptionModel(
+                                rsSub.getString("subscription_id"),
+                                rsSub.getString("label"),
+                                rsSub.getDouble("price"),
+                                stringToTypeSubscription(rsSub.getString("type"))
+                        )
+                );
+                List<PlanningModel> planningModel = jdbcTemplate.query(queryPlanning, (rsPlanning, rows1) -> new PlanningModel(
+                        rsPlanning.getInt("planning_id"),
+                        rsPlanning.getDate("date"),
+                        rsPlanning.getTime("start_time"),
+                        rsPlanning.getTime("end_time"),
+                        new RoomModel(rsPlanning.getString("room_id"), rsPlanning.getString("room_name"))
+                ));
+                return new ActivityModel(rs.getInt("activity_id"),
+                        rs.getString("label"), rs.getString("description"),
+                        coachModel, subscriptionModel, planningModel);
+            });
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -24,6 +24,10 @@ public class RoomModel {
         this.roomName = roomName;
         this.plannings = plannings;
     }
+    public RoomModel(String roomId, String roomName) {
+        this.roomId = roomId;
+        this.roomName = roomName;
+    }
 
     public RoomModel(String roomName, Set<PlanningModel> plannings) {
         this.roomName = roomName;

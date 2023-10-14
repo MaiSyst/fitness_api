@@ -6,7 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/api/subscription")
@@ -28,8 +33,32 @@ public class SubscriptionController {
     }
 
     @GetMapping("/fetchAll")
-    public ResponseEntity<List<SubscriptionModel>> fetchAll() {
+    public ResponseEntity<List<Map<String, String>>> fetchAll() {
         var response = subscriptionServices.fetchAll();
+        System.out.println(response.getData());
+        if (response.getStatus() == HttpStatus.OK) {
+            Map<String, String> data = new HashMap<>();
+            List<Map<String, String>> responseData = new ArrayList<>();
+            Executors.newSingleThreadExecutor()
+                    .execute(() -> {
+                        response.getData().forEach(x -> {
+                            Map<String, String> map = new HashMap<>();
+                            map.put("subscriptionId", x.getSubscriptionId());
+                            map.put("label", x.getLabel());
+                            map.put("price", String.valueOf(x.getPrice()));
+                            map.put("type", x.getType().toString());
+                            responseData.add(map);
+                        });
+                    });
+            return new ResponseEntity<>(responseData, response.getStatus());
+        } else {
+            return new ResponseEntity<>(null, response.getStatus());
+        }
+    }
+
+    @GetMapping("/fetchById/{subscription_id}")
+    public ResponseEntity<SubscriptionModel> fetchById(@PathVariable String subscription_id) {
+        var response = subscriptionServices.findById(subscription_id);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), response.getStatus());
         } else {

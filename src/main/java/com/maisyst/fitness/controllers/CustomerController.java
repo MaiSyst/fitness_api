@@ -26,6 +26,24 @@ public class CustomerController {
            return new ResponseEntity<>(response.getMessage(),response.getStatus());
        }
     }
+    @PutMapping("/update/{activity_id}")
+    public ResponseEntity<String> update(@PathVariable int activity_id,@RequestBody CustomerModel model){
+        var response=customerServices.update(activity_id,model);
+       if(response.getStatus()==HttpStatus.OK) {
+           return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
+       }else{
+           return new ResponseEntity<>(response.getMessage(),response.getStatus());
+       }
+    }
+    @DeleteMapping("/delete/{activity_id}")
+    public ResponseEntity<String> delete(@PathVariable int activity_id){
+        var response=customerServices.deleteById(activity_id);
+       if(response.getStatus()==HttpStatus.OK) {
+           return new ResponseEntity<>("Customer have been deleted with Success", HttpStatus.OK);
+       }else{
+           return new ResponseEntity<>(response.getMessage(),response.getStatus());
+       }
+    }
     @GetMapping("/fetchAll")
     public ResponseEntity<List<CustomerModel>> fetchAll(){
         var response=customerServices.fetchAll();
@@ -34,12 +52,5 @@ public class CustomerController {
         }else{
             return new ResponseEntity<>(null,response.getStatus());
         }
-    }
-    private TypeSubscription stringToTypeSubscription(String type){
-        return switch (type.toLowerCase()) {
-            case "gold" -> TypeSubscription.GOLD;
-            case "prime" -> TypeSubscription.PRIME;
-            default -> TypeSubscription.STANDARD;
-        };
     }
 }

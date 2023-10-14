@@ -49,6 +49,14 @@ public class CoachModel {
         this.speciality = speciality;
         this.activityCoach = activityCoach;
     }
+      public CoachModel(int coachId, String firstName, String lastName, String phone, String address, String speciality) {
+        this.coachId = coachId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.address = address;
+        this.speciality = speciality;
+    }
     public String getFirstName() {
         return firstName;
     }

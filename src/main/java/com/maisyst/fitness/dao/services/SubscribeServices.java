@@ -2,6 +2,7 @@ package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.interfaces.ISubscribeServices;
 import com.maisyst.fitness.dao.repositories.ISubscribeRepository;
+import com.maisyst.fitness.models.ActivityModel;
 import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.models.CustomerModel;
 import com.maisyst.fitness.models.SubscribeModel;
@@ -38,7 +39,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(Integer id) {
+    public MaiResponse<String> deleteById(int id) {
         try {
             subscribeRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Subscribe has been deleted", HttpStatus.OK);
@@ -48,7 +49,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> findById(Integer id) {
+    public MaiResponse<SubscribeModel> findById(int id) {
         try {
             var response = subscribeRepository.findById(id);
             if (response.isPresent()) {
@@ -91,7 +92,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> update(Integer id, SubscribeModel model) {
+    public MaiResponse<SubscribeModel> update(int id, SubscribeModel model) {
         try {
             var result = subscribeRepository.findById(id);
             if (result.isPresent()) {
@@ -106,14 +107,13 @@ public class SubscribeServices implements ISubscribeServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
     @Override
-    public MaiResponse<SubscribeModel> updateCustomerSubscription(Integer subscribeId, SubscriptionModel model) {
+    public MaiResponse<SubscribeModel> updateCustomerSubscription(int subscribeId, SubscriptionModel model) {
         return null;
     }
 
     @Override
-    public MaiResponse<SubscribeModel> updateSubscribeCustomer(Integer subscribeId, CustomerModel model) {
+    public MaiResponse<SubscribeModel> updateSubscribeCustomer(int subscribeId, CustomerModel model) {
         return null;
     }
 
@@ -124,8 +124,19 @@ public class SubscribeServices implements ISubscribeServices {
             final String query = "SELECT * from subscribe,customer as c,subscription as sub WHERE subscribe.subscription_id=sub.subscription_id and subscribe.customer_id=c.customer_id";
             var response = jdbcTemplate.query(query,
                     (rs, rows) -> {
-                        CustomerModel customerModel = new CustomerModel(rs.getInt("customer_id"), rs.getString("first_name"), rs.getString("last_name"), rs.getDate("year_of_birth"), rs.getString("address"));
+                        CustomerModel customerModel = new CustomerModel(rs.getInt("customer_id"),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getDate("year_of_birth"),
+                                rs.getString("address"),
+                                rs.getString("email"),
+                                rs.getString("password")
+                                );
                         SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));
+                        System.out.println(rs.getString("subscription_id"));
+                        List<ActivityModel>activities=jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id='"+rs.getString("subscription_id")+"'",
+                                (rs1,rows1)->new ActivityModel(rs1.getInt("activity_id"),rs1.getString("label"),rs1.getString("description")));
+                        subscriptionModel.setActivities(activities);
                         return new SubscribeModel(
                                 rs.getInt("subscribe_id"),
                                 rs.getDate("date_start"),
