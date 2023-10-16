@@ -1,19 +1,13 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.ISubscribeServices;
+import com.maisyst.fitness.dao.services.interfaces.ISubscribeServices;
 import com.maisyst.fitness.dao.repositories.ISubscribeRepository;
-import com.maisyst.fitness.models.ActivityModel;
+import com.maisyst.fitness.models.*;
 import com.maisyst.fitness.utils.MaiResponse;
-import com.maisyst.fitness.models.CustomerModel;
-import com.maisyst.fitness.models.SubscribeModel;
-import com.maisyst.fitness.models.SubscriptionModel;
-import com.maisyst.fitness.utils.TypeSubscription;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
@@ -107,6 +101,7 @@ public class SubscribeServices implements ISubscribeServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
     @Override
     public MaiResponse<SubscribeModel> updateCustomerSubscription(int subscribeId, SubscriptionModel model) {
         return null;
@@ -131,11 +126,36 @@ public class SubscribeServices implements ISubscribeServices {
                                 rs.getString("address"),
                                 rs.getString("email"),
                                 rs.getString("password")
-                                );
+                        );
+
                         SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));
-                        System.out.println(rs.getString("subscription_id"));
-                        List<ActivityModel>activities=jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id='"+rs.getString("subscription_id")+"'",
-                                (rs1,rows1)->new ActivityModel(rs1.getInt("activity_id"),rs1.getString("label"),rs1.getString("description")));
+                        List<ActivityModel> activities = jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id='" + rs.getString("subscription_id") + "'",
+                                (rs1, rows1) -> {
+                                    ActivityModel activityModel = new ActivityModel(rs1.getInt("activity_id"), rs1.getString("label"), rs1.getString("description"));
+                                    var coach = jdbcTemplate.query("SELECT * FROM coach WHERE coach.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new CoachModel(
+                                            rs2.getInt("coach_id"),
+                                            rs2.getString("first_name"),
+                                            rs2.getString("last_name"),
+                                            rs2.getString("phone"),
+                                            rs2.getString("address"),
+                                            rs2.getString("speciality")
+                                    ));
+                                    //int planningId, Date date, Time start_time, Time end_time, RoomModel room
+                                    var planning = jdbcTemplate.query("SELECT * FROM planning,room WHERE planning.room_id=room.room_id AND planning.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new PlanningModel(
+                                            rs2.getInt("planning_id"),
+                                            rs2.getDate("date"),
+                                            rs2.getTime("start_time"),
+                                            rs2.getTime("end_time"),
+                                            new RoomModel(
+                                                    rs2.getString("room_id"),
+                                                    rs2.getString("room_name")
+                                            )
+                                    ));
+                                    activityModel.setCoach(coach);
+                                    activityModel.setPlannings(planning);
+                                    return activityModel;
+                                });
+
                         subscriptionModel.setActivities(activities);
                         return new SubscribeModel(
                                 rs.getInt("subscribe_id"),
@@ -150,4 +170,5 @@ public class SubscribeServices implements ISubscribeServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
     }
+
 }

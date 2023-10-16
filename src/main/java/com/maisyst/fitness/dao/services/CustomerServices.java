@@ -1,19 +1,16 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.IActivityServices;
-import com.maisyst.fitness.dao.interfaces.ICustomerServices;
-import com.maisyst.fitness.dao.interfaces.ISubscribeServices;
-import com.maisyst.fitness.dao.interfaces.ISubscriptionServices;
+import com.maisyst.fitness.dao.services.interfaces.IActivityServices;
+import com.maisyst.fitness.dao.services.interfaces.ICustomerServices;
+import com.maisyst.fitness.dao.services.interfaces.ISubscribeServices;
+import com.maisyst.fitness.dao.services.interfaces.ISubscriptionServices;
 import com.maisyst.fitness.dao.repositories.ICustomerRepository;
 import com.maisyst.fitness.utils.MaiResponse;
-import com.maisyst.fitness.utils.TypeSubscription;
-import com.maisyst.MaiDateCompare;
 import com.maisyst.fitness.models.CustomerModel;
 import com.maisyst.fitness.models.SubscribeModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 
 import static com.maisyst.fitness.utils.MaiUtils.getDateSubscription;

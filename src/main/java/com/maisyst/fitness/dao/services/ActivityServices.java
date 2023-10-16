@@ -1,6 +1,6 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.IActivityServices;
+import com.maisyst.fitness.dao.services.interfaces.IActivityServices;
 import com.maisyst.fitness.dao.repositories.IActivityRepository;
 import com.maisyst.fitness.models.*;
 import com.maisyst.fitness.utils.MaiResponse;
@@ -9,9 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 

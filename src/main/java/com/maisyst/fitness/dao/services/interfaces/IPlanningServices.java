@@ -1,4 +1,4 @@
-package com.maisyst.fitness.dao.interfaces;
+package com.maisyst.fitness.dao.services.interfaces;
 
 import com.maisyst.fitness.models.PlanningModel;
 import com.maisyst.fitness.utils.MaiResponse;

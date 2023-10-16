@@ -1,11 +1,14 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.IRoomServices;
+import com.maisyst.fitness.dao.services.interfaces.IRoomServices;
 import com.maisyst.fitness.dao.repositories.IRoomRepository;
+import com.maisyst.fitness.models.ActivityModel;
+import com.maisyst.fitness.models.PlanningModel;
 import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.models.RoomModel;
 import com.maisyst.fitness.utils.MaiUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +16,11 @@ import java.util.List;
 @Service
 public class RoomServices implements IRoomServices {
     private final IRoomRepository roomRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public RoomServices(IRoomRepository roomRepository) {
+    public RoomServices(IRoomRepository roomRepository, JdbcTemplate jdbcTemplate) {
         this.roomRepository = roomRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -31,7 +36,7 @@ public class RoomServices implements IRoomServices {
 
     @Override
     public MaiResponse<String> deleteById(String id) {
-       try {
+        try {
             roomRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Room have been deleted", HttpStatus.OK);
         } catch (Exception ex) {
@@ -56,7 +61,27 @@ public class RoomServices implements IRoomServices {
     @Override
     public MaiResponse<List<RoomModel>> fetchAll() {
         try {
-            return new MaiResponse.MaiSuccess<>(roomRepository.findAll(), HttpStatus.OK);
+            String query = "SELECT * FROM room";
+            var data = jdbcTemplate.query(query, (rs, rowNum) -> {
+                var planning = jdbcTemplate.query("SELECT * FROM planning,activity WHERE planning.activity_id =activity.activity_id AND planning.room_id='" + rs.getString("room_id") + "'",
+                        (rs1, rowNum1) -> new PlanningModel(
+                                rs1.getInt("planning_id"),
+                                rs1.getDate("date"),
+                                rs1.getTime("start_time"),
+                                rs1.getTime("end_time"),
+                                new ActivityModel(
+                                        rs1.getInt("activity_id"),
+                                        rs1.getString("label"),
+                                        rs1.getString("description")
+                                )
+                        ));
+                return new RoomModel(
+                        rs.getString("room_id"),
+                        rs.getString("room_name"),
+                        planning
+                );
+            });
+            return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -74,7 +99,7 @@ public class RoomServices implements IRoomServices {
 
     @Override
     public MaiResponse<String> deleteMany(List<String> ids) {
-       try {
+        try {
             roomRepository.deleteAllById(ids);
             return new MaiResponse.MaiSuccess<>("Rooms has been deleted", HttpStatus.OK);
         } catch (Exception ex) {

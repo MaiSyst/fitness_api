@@ -1,6 +1,6 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.ICoachServices;
+import com.maisyst.fitness.dao.services.interfaces.ICoachServices;
 import com.maisyst.fitness.dao.repositories.ICoachRepository;
 import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.models.CoachModel;

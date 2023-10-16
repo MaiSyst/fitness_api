@@ -1,7 +1,6 @@
-package com.maisyst.fitness.dao.interfaces;
+package com.maisyst.fitness.dao.services.interfaces;
 
 import com.maisyst.fitness.utils.MaiResponse;
-import com.maisyst.fitness.utils.TypeSubscription;
 import com.maisyst.fitness.models.SubscriptionModel;
 
 public non-sealed interface ISubscriptionServices extends IServices<SubscriptionModel,String>{

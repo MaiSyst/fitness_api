@@ -1,6 +1,6 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.IPlanningServices;
+import com.maisyst.fitness.dao.services.interfaces.IPlanningServices;
 import com.maisyst.fitness.dao.repositories.IPlanningRepository;
 import com.maisyst.fitness.models.*;
 import com.maisyst.fitness.utils.MaiResponse;

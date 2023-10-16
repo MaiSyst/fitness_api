@@ -58,13 +58,12 @@ public class CoachController {
     }
 
     @GetMapping("/fetchAll")
-    public ResponseEntity<List<CoachModel>> fetchAll() {
+    public ResponseEntity<Object> fetchAll() {
         var response = coachServices.fetchAll();
         if (response.getStatus() == HttpStatus.OK) {
-            System.out.println(response.getData());
             return new ResponseEntity<>(response.getData(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, response.getStatus());
+            return new ResponseEntity<>(response.getMessage(), response.getStatus());
         }
     }
     @DeleteMapping("/delete/{coach_id}")

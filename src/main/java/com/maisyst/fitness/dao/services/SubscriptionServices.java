@@ -1,13 +1,9 @@
 package com.maisyst.fitness.dao.services;
 
-import com.maisyst.fitness.dao.interfaces.ISubscriptionServices;
+import com.maisyst.fitness.dao.services.interfaces.ISubscriptionServices;
 import com.maisyst.fitness.dao.repositories.ISubscriptionRepository;
-import com.maisyst.fitness.models.ActivityModel;
-import com.maisyst.fitness.models.SubscribeModel;
 import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.utils.MaiUID;
-import com.maisyst.fitness.utils.MaiUtils;
-import com.maisyst.fitness.utils.TypeSubscription;
 import com.maisyst.fitness.models.SubscriptionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;

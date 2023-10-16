@@ -1,6 +1,7 @@
 package com.maisyst.fitness.utils;
 
 import com.maisyst.MaiDateCompare;
+import com.maisyst.fitness.models.AuthRole;
 
 import java.sql.Date;
 
@@ -12,7 +13,8 @@ public final class MaiUtils {
             default -> TypeSubscription.STANDARD;
         };
     }
-     public static Date[] getDateSubscription(TypeSubscription type) {
+
+    public static Date[] getDateSubscription(TypeSubscription type) {
         var date = new java.util.Date();
         return switch (type) {
             case GOLD -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addYears(date, 1))};
@@ -20,12 +22,21 @@ public final class MaiUtils {
             default -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addMonths(date, 1))};
         };
     }
-    public static double getPriceSubscription(TypeSubscription type){
-        return switch (type){
+
+    public static double getPriceSubscription(TypeSubscription type) {
+        return switch (type) {
             case GOLD -> 100_000;
             case PRIME -> 60_000;
             default -> 15_000;
         };
+    }
+
+    public static AuthRole stringToAuthRole(String role) {
+        if (role.toLowerCase().equals("user")) {
+            return AuthRole.USER;
+        } else {
+            return AuthRole.CUSTOMER;
+        }
     }
 
     public static Date getDateSql(java.util.Date date) {

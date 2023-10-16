@@ -11,12 +11,12 @@ public class PlanningModel {
     @Column(name = "planning_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int planningId;
-    @Column
+    @Column(nullable = false)
     private Date date;
-    @Column
-    private Time start_time;
-    @Column
-    private Time end_time;
+    @Column(nullable = false,name = "start_time")
+    private Time startTime;
+    @Column(nullable = false,name = "end_time")
+    private Time endTime;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id")
     private RoomModel room;
@@ -26,28 +26,35 @@ public class PlanningModel {
     public PlanningModel() {
     }
 
-    public PlanningModel(Date date, Time start_time, Time end_time, RoomModel room, ActivityModel activity) {
+    public PlanningModel(Date date, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
         this.date = date;
-        this.start_time = start_time;
-        this.end_time = end_time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.room = room;
         this.activity = activity;
     }
 
-    public PlanningModel(int planningId, Date date, Time start_time, Time end_time, RoomModel room, ActivityModel activity) {
+    public PlanningModel(int planningId, Date date, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
         this.planningId = planningId;
         this.date = date;
-        this.start_time = start_time;
-        this.end_time = end_time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.room = room;
         this.activity = activity;
     }
 
-    public PlanningModel(int planningId, Date date, Time start_time, Time end_time, RoomModel room) {
+    public PlanningModel(int planningId, Date date, Time startTime, Time endTime, RoomModel room) {
         this.date = date;
-        this.start_time = start_time;
-        this.end_time = end_time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.room = room;
+        this.planningId = planningId;
+    }
+     public PlanningModel(int planningId, Date date, Time startTime, Time endTime, ActivityModel activity) {
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.activity = activity;
         this.planningId = planningId;
     }
 
@@ -67,20 +74,20 @@ public class PlanningModel {
         this.date = date;
     }
 
-    public Time getStart_time() {
-        return start_time;
+    public Time getStartTime() {
+        return startTime;
     }
 
-    public void setStart_time(Time start_time) {
-        this.start_time = start_time;
+    public void setStartTime(Time start_time) {
+        this.startTime = start_time;
     }
 
-    public Time getEnd_time() {
-        return end_time;
+    public Time getEndTime() {
+        return endTime;
     }
 
-    public void setEnd_time(Time end_time) {
-        this.end_time = end_time;
+    public void setEndTime(Time end_time) {
+        this.endTime = end_time;
     }
 
     public RoomModel getRoom() {
