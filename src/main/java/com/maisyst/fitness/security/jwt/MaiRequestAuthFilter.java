@@ -33,7 +33,6 @@ public class MaiRequestAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         checkTokenExist(request)
                 .map(maiJwtDecode::decodedJWT)
                 .map(maiJwtDecodeToUserModel::convertNow)

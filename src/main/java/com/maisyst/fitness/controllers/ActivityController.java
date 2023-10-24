@@ -32,14 +32,24 @@ public class ActivityController {
             return new ResponseEntity<>(response.getMessage(), response.getStatus());
         }
     }
+     @PostMapping("/add")
+    public ResponseEntity<String> add(@RequestBody ActivityModel model) {
+        var response = activityServices.insert(model);
+
+        if (response.getStatus() == HttpStatus.OK) {
+            return new ResponseEntity<>("Activity was added.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response.getMessage(), response.getStatus());
+        }
+    }
 
     @GetMapping("/fetchAll")
-    public ResponseEntity<List<ActivityModel>> fetchAll() {
+    public ResponseEntity<Object> fetchAll() {
         var response = activityServices.fetchAll();
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(null, response.getStatus());
+            return new ResponseEntity<>("Authorized", response.getStatus());
         }
 
     }
