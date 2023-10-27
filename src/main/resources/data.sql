@@ -1,0 +1,1 @@
+INSERT INTO login(username,password,role,created_at) VALUES ('admin','$2a$10$ShZnV8OdBzUpzSZGqqw3dOsbGM4VLS8qPwvf725S1nVoAXnf62ijq','ADMIN',NOW());

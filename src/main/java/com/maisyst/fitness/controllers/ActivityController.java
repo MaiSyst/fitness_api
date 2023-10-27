@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
 @RestController
@@ -55,7 +56,7 @@ public class ActivityController {
     }
 
     @PutMapping("/update/{activity_id}")
-    public ResponseEntity<String> update(@PathVariable int activity_id, @RequestBody ActivityModel model) {
+    public ResponseEntity<String> update(@PathVariable UUID activity_id, @RequestBody ActivityModel model) {
         var activityResponse = activityServices.update(activity_id, model);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             Executors.newSingleThreadExecutor().submit(() -> activityResponse.getData().getCoach().forEach(coachModel -> {
@@ -70,7 +71,7 @@ public class ActivityController {
     }
 
     @DeleteMapping("/delete/{activity_id}")
-    public ResponseEntity<String> delete(@PathVariable int activity_id) {
+    public ResponseEntity<String> delete(@PathVariable UUID activity_id) {
         var activityResponse = activityServices.deleteById(activity_id);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(activityResponse.getData(), activityResponse.getStatus());

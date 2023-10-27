@@ -13,10 +13,11 @@ import java.util.List;
 @Service
 public class MoviesServices implements IMoviesServices {
     private final IMoviesRepository moviesRepository;
-
+    private final StorageService storageService;
     @Autowired
-    public MoviesServices(IMoviesRepository moviesRepository) {
+    public MoviesServices(IMoviesRepository moviesRepository, StorageService storageService) {
         this.moviesRepository = moviesRepository;
+        this.storageService = storageService;
     }
 
     @Override

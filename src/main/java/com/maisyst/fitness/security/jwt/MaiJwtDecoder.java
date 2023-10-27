@@ -28,4 +28,5 @@ public class MaiJwtDecoder {
         }
         return decodedJWT;
     }
+
 }

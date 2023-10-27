@@ -2,19 +2,23 @@ package com.maisyst.fitness.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity(name = "login")
 public class UserModel implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    Integer userId;
+    UUID userId;
     @Column(unique = true, nullable = false)
     String username;
     @Column(nullable = false)
@@ -24,11 +28,16 @@ public class UserModel implements UserDetails {
     boolean isActive;
     @Enumerated(value = EnumType.STRING)
     AuthRole role;
-
+    @CreatedDate
+    @Column(name = "created_at")
+    Date createdAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    Date updatedAt;
     public UserModel() {
     }
 
-    public UserModel(Integer userId, String username, String password, AuthRole role, boolean isActive) {
+    public UserModel(UUID userId, String username, String password, AuthRole role, boolean isActive) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -43,7 +52,7 @@ public class UserModel implements UserDetails {
         this.isActive = isActive;
     }
 
-    public UserModel(Integer userId, String username, AuthRole role, boolean isActive) {
+    public UserModel(UUID userId, String username, AuthRole role, boolean isActive) {
         this.userId = userId;
         this.username = username;
         this.role = role;
@@ -89,11 +98,11 @@ public class UserModel implements UserDetails {
         return password;
     }
 
-    public Integer getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

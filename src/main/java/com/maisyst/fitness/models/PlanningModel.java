@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.UUID;
 
 @Entity(name = "planning")
 public class PlanningModel {
     @Id
     @Column(name = "planning_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int planningId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID planningId;
     @Column(nullable = false)
     private Date date;
     @Column(nullable = false,name = "start_time")
@@ -34,7 +35,7 @@ public class PlanningModel {
         this.activity = activity;
     }
 
-    public PlanningModel(int planningId, Date date, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
+    public PlanningModel(UUID planningId, Date date, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
         this.planningId = planningId;
         this.date = date;
         this.startTime = startTime;
@@ -43,14 +44,14 @@ public class PlanningModel {
         this.activity = activity;
     }
 
-    public PlanningModel(int planningId, Date date, Time startTime, Time endTime, RoomModel room) {
+    public PlanningModel(UUID planningId, Date date, Time startTime, Time endTime, RoomModel room) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.room = room;
         this.planningId = planningId;
     }
-     public PlanningModel(int planningId, Date date, Time startTime, Time endTime, ActivityModel activity) {
+     public PlanningModel(UUID planningId, Date date, Time startTime, Time endTime, ActivityModel activity) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -58,11 +59,11 @@ public class PlanningModel {
         this.planningId = planningId;
     }
 
-    public int getPlanningId() {
+    public UUID getPlanningId() {
         return planningId;
     }
 
-    public void setPlanningId(int planningId) {
+    public void setPlanningId(UUID planningId) {
         this.planningId = planningId;
     }
 

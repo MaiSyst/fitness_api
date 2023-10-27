@@ -2,25 +2,31 @@ package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.repositories.IUserRepository;
 import com.maisyst.fitness.dao.services.interfaces.IUserService;
-import com.maisyst.fitness.models.AuthRequest;
-import com.maisyst.fitness.models.AuthResponse;
-import com.maisyst.fitness.models.UserModel;
+import com.maisyst.fitness.models.*;
 import com.maisyst.fitness.security.jwt.MaiJWTConfig;
+import com.maisyst.fitness.security.jwt.MaiJwtDecoder;
 import com.maisyst.fitness.utils.MaiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class UserService implements IUserService {
     private final IUserRepository repository;
     private final MaiJWTConfig maiJWTConfig;
+    private final MaiJwtDecoder maiJwtDecoder;
+    private final CustomerServices customerServices;
 
     @Autowired
-    public UserService(IUserRepository repository, MaiJWTConfig maiJWTConfig) {
+    public UserService(IUserRepository repository, MaiJWTConfig maiJWTConfig, MaiJwtDecoder maiJwtDecoder, CustomerServices customerServices) {
         this.repository = repository;
         this.maiJWTConfig = maiJWTConfig;
+        this.maiJwtDecoder = maiJwtDecoder;
+        this.customerServices = customerServices;
     }
 
     @Override
@@ -71,7 +77,7 @@ public class UserService implements IUserService {
     @Override
     public MaiResponse<UserModel> add(UserModel model) {
         try {
-             model.setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
+            model.setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
             var response = repository.save(model);
             return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
         } catch (Exception ex) {
@@ -95,16 +101,25 @@ public class UserService implements IUserService {
             var responseUsername = repository.findByUsername(authRequest.username());
             if (responseUsername.isPresent()) {
                 var model = responseUsername.get();
-                var result = new BCryptPasswordEncoder().matches(authRequest.password(), model.getPassword());
-                if (result) {
-                    return new MaiResponse.MaiSuccess<>(new AuthResponse(
-                            model.getUsername(),
-                            maiJWTConfig.createToken(model.getUserId(),model.getUsername(), model.getRole(),model.getIsActive()),
-                            model.getRole()
-
-                    ), HttpStatus.OK);
+                if (model.getIsActive()) {
+                    var result = new BCryptPasswordEncoder().matches(authRequest.password(), model.getPassword());
+                    if (result) {
+                        int daysValidate = switch (model.getRole()) {
+                            case USER -> 3;
+                            case ADMIN -> 1;
+                            default -> 30;
+                        };
+                        return new MaiResponse.MaiSuccess<>(new AuthResponse(
+                                model.getUsername(),
+                                maiJWTConfig.createToken(model.getUserId(), model.getUsername(), model.getRole(), model.getIsActive(), daysValidate),
+                                model.getRole(),
+                                model.getIsActive()
+                        ), HttpStatus.OK);
+                    } else {
+                        return new MaiResponse.MaiError<>("Password doesn't matches.", HttpStatus.NOT_FOUND);
+                    }
                 } else {
-                    return new MaiResponse.MaiError<>("Password doesn't matches.", HttpStatus.NOT_FOUND);
+                    return new MaiResponse.MaiError<>("Sorry your account is inactive.", HttpStatus.LOCKED);
                 }
             } else {
                 return new MaiResponse.MaiError<>("User doesn't exist", HttpStatus.NOT_FOUND);
@@ -113,5 +128,34 @@ public class UserService implements IUserService {
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+    @Override
+    public MaiResponse<AuthResponse> signInCustomer(AuthRequestCustomer authRequest) {
+        var responseUsername = customerServices.findByUsername(authRequest.username());
+        if (responseUsername.getStatus() == HttpStatus.OK) {
+            var model=responseUsername.getData();
+
+            return new MaiResponse.MaiSuccess<>(new AuthResponse(
+                    responseUsername.getData().getUsername(),
+                    maiJWTConfig.createToken(model.getCustomerId(), model.getUsername(), authRequest.role(), model.getIsActive(), 30),
+                    authRequest.role(),
+                    responseUsername.getData().getIsActive()
+            ), HttpStatus.OK);
+        }
+        return new MaiResponse.MaiError<>("User doesn't exist", HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public MaiResponse<Map<String, String>> checkToken(String token) {
+        var response = maiJwtDecoder.decodedJWT(token);
+        if (response == null) {
+            return new MaiResponse.MaiError<>("Invalid token", HttpStatus.BAD_REQUEST);
+        }
+        return new MaiResponse.MaiSuccess<>(new HashMap<>() {{
+            put("username", response.getClaim("username").asString());
+            put("role", response.getClaim("role").asString());
+            put("isActive", response.getClaim("isAccountActivate").asString());
+            put("token", token);
+        }}, HttpStatus.OK);
     }
 }

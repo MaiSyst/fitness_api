@@ -31,6 +31,8 @@ public class APISecurityConfig {
                 .securityMatcher("/**")
                 .authorizeHttpRequests((requests) -> requests
                     .requestMatchers("/api/auth/signIn").permitAll()
+                    .requestMatchers("/api/auth/signInCustomer").permitAll()
+                    .requestMatchers("/api/auth/checkToken").permitAll()
                     .requestMatchers("/api/auth/addUser").permitAll()
 				    .anyRequest().authenticated()
 			    )

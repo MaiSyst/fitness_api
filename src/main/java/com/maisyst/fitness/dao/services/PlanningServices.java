@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PlanningServices implements IPlanningServices {
@@ -27,7 +28,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<PlanningModel> insert(int activity_id, String room_id, PlanningModel model) {
+    public MaiResponse<PlanningModel> insert(UUID activity_id, String room_id, PlanningModel model) {
         try {
             var activityResponse = activityServices.findById(activity_id);
             var roomResponse = roomServices.findById(room_id);
@@ -45,7 +46,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(int id) {
+    public MaiResponse<String> deleteById(UUID id) {
         try {
             planningRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Planning have been deleted", HttpStatus.OK);
@@ -55,7 +56,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<PlanningModel> findById(int id) {
+    public MaiResponse<PlanningModel> findById(UUID id) {
         try {
             var response = planningRepository.findById(id);
             if (response.isPresent()) {
@@ -74,12 +75,12 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<Integer> ids) {
+    public MaiResponse<String> deleteMany(List<UUID> ids) {
         return null;
     }
 
     @Override
-    public MaiResponse<PlanningModel> update(int id, String room_id, PlanningModel model) {
+    public MaiResponse<PlanningModel> update(UUID id, String room_id, PlanningModel model) {
         return null;
     }
 
@@ -92,7 +93,7 @@ public class PlanningServices implements IPlanningServices {
                 List<CoachModel> coachModels = jdbcTemplate.query(
                         "SELECT * FROM coach WHERE coach.activity_id=" + rs.getInt("activity_id"),
                         (rsCoach, rowsCoach) -> new CoachModel(
-                                rsCoach.getInt("coach_id"),
+                                UUID.fromString(rsCoach.getString("coach_id")),
                                 rsCoach.getString("first_name"),
                                 rsCoach.getString("last_name"),
                                 rsCoach.getString("phone"),
@@ -110,7 +111,7 @@ public class PlanningServices implements IPlanningServices {
                         )
                 );
                 ActivityModel activityModel = new ActivityModel(
-                        rs.getInt("activity_id"),
+                       UUID.fromString( rs.getString("activity_id")),
                         rs.getString("label"),
                         rs.getString("description"),
                         coachModels,
@@ -120,7 +121,7 @@ public class PlanningServices implements IPlanningServices {
                         rs.getString("room_name")
                 );
                 return new PlanningModel(
-                        rs.getInt("planning_id"),
+                        UUID.fromString(rs.getString("planning_id")),
                         rs.getDate("date"),
                         rs.getTime("start_time"),
                         rs.getTime("end_time"),

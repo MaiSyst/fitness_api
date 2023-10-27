@@ -6,13 +6,14 @@ import jakarta.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity(name = "customer")
 public class CustomerModel {
     @Id
     @Column(name = "customer_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int customerId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID customerId;
     @Column(name = "first_name",nullable = false)
     private String firstName;
     @Column(name = "last_name",nullable = false)
@@ -22,9 +23,12 @@ public class CustomerModel {
     @Column(nullable = false)
     private String address;
     @Column(nullable = false,unique = true)
-    private String email;
+    private String username;
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
+     @Column(nullable = false)
+    private boolean isActive;
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private Set<SubscribeModel> subscribes = new HashSet<>();
@@ -33,45 +37,49 @@ public class CustomerModel {
 
     }
 
-    public CustomerModel(int customerId, String firstName, String lastName, Date yearOfBirth, String address,String email,String password, Set<SubscribeModel> subscribes) {
+    public CustomerModel(UUID customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password, Set<SubscribeModel> subscribes) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
-        this.email=email;
+        this.username=username;
         this.password=password;
+        this.isActive=true;
     }
 
-    public CustomerModel(int customerId, String firstName, String lastName, Date yearOfBirth, String address,String email,String password) {
+    public CustomerModel(UUID customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
-        this.email=email;
+        this.username=username;
         this.password=password;
+        this.isActive=true;
     }
 
-    public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String email,String password, Set<SubscribeModel> subscribes) {
+    public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String username,String password, Set<SubscribeModel> subscribes) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
-        this.email=email;
+        this.username=username;
         this.password=password;
+        this.isActive=true;
     }
-public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String email,String password) {
+public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String username,String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
-        this.email=email;
+        this.username=username;
         this.password=password;
+        this.isActive=true;
     }
-    public int getCustomerId() {
+    public UUID getCustomerId() {
         return customerId;
     }
 
@@ -116,19 +124,25 @@ public CustomerModel(String firstName, String lastName, Date yearOfBirth, String
         this.subscribes = subscribes;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public boolean getIsActive() {
+        return isActive;
+    }
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }

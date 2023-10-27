@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 /**
  * @author MaiSYST
@@ -29,14 +30,13 @@ public class MaiJWTConfig {
      * @param isAccountActive is the status of the user account
      * @return token created with information user
      */
-    public String createToken(int user_id,String username, AuthRole role,boolean isAccountActive){
+    public String createToken(UUID user_id, String username, AuthRole role, boolean isAccountActive, int validTokenInDays){
         return JWT.create()
                 .withSubject(String.valueOf(user_id))
-                .withExpiresAt(Instant.now().plus(Duration.of(7, ChronoUnit.DAYS)))
+                .withExpiresAt(Instant.now().plus(Duration.of(validTokenInDays, ChronoUnit.DAYS)))
                 .withClaim("username",username)
                 .withClaim("role",role.name())
                 .withClaim("isAccountActivate",isAccountActive)
                 .sign(Algorithm.HMAC256(maiJWTProperties.getSecretToken()));
-
     }
 }

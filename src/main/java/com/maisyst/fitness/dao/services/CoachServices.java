@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CoachServices implements ICoachServices {
@@ -18,7 +19,7 @@ public class CoachServices implements ICoachServices {
     }
 
     @Override
-    public MaiResponse<CoachModel> update(Integer id, CoachModel model) {
+    public MaiResponse<CoachModel> update(UUID id, CoachModel model) {
         try {
             var responseOptional = coachRepository.findById(id);
             if (responseOptional.isPresent()) {
@@ -50,7 +51,7 @@ public class CoachServices implements ICoachServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(Integer id) {
+    public MaiResponse<String> deleteById(UUID id) {
        try {
             coachRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Coach deleted", HttpStatus.OK);
@@ -60,7 +61,7 @@ public class CoachServices implements ICoachServices {
     }
 
     @Override
-    public MaiResponse<CoachModel> findById(Integer id) {
+    public MaiResponse<CoachModel> findById(UUID id) {
         try {
             var response = coachRepository.findById(id);
             if (response.isPresent()) {
@@ -94,7 +95,7 @@ public class CoachServices implements ICoachServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<Integer> ids) {
+    public MaiResponse<String> deleteMany(List<UUID> ids) {
         try {
             coachRepository.deleteAllById(ids);
             return new MaiResponse.MaiSuccess<>("Activities was deleted", HttpStatus.OK);

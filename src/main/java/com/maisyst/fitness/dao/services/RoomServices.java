@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RoomServices implements IRoomServices {
@@ -65,12 +66,12 @@ public class RoomServices implements IRoomServices {
             var data = jdbcTemplate.query(query, (rs, rowNum) -> {
                 var planning = jdbcTemplate.query("SELECT * FROM planning,activity WHERE planning.activity_id =activity.activity_id AND planning.room_id='" + rs.getString("room_id") + "'",
                         (rs1, rowNum1) -> new PlanningModel(
-                                rs1.getInt("planning_id"),
+                                UUID.fromString(rs1.getString("planning_id")),
                                 rs1.getDate("date"),
                                 rs1.getTime("start_time"),
                                 rs1.getTime("end_time"),
                                 new ActivityModel(
-                                        rs1.getInt("activity_id"),
+                                        UUID.fromString(rs1.getString("activity_id")),
                                         rs1.getString("label"),
                                         rs1.getString("description")
                                 )

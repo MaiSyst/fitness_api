@@ -4,5 +4,7 @@ import com.maisyst.fitness.models.ActivityModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface IActivityRepository extends JpaRepository<ActivityModel,Integer> {}
+public interface IActivityRepository extends JpaRepository<ActivityModel, UUID> {}

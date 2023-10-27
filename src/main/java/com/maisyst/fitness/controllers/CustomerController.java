@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -18,7 +19,7 @@ public class CustomerController {
     }
 
     @PostMapping("/add/{subscription_type}/{activity_id}")
-    public ResponseEntity<String> add(@PathVariable String subscription_type,@PathVariable int activity_id,@RequestBody CustomerModel model){
+    public ResponseEntity<String> add(@PathVariable String subscription_type, @PathVariable UUID activity_id, @RequestBody CustomerModel model){
         var response=customerServices.insertWithSubscription(subscription_type,activity_id,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
@@ -27,7 +28,7 @@ public class CustomerController {
        }
     }
     @PutMapping("/update/{activity_id}")
-    public ResponseEntity<String> update(@PathVariable int activity_id,@RequestBody CustomerModel model){
+    public ResponseEntity<String> update(@PathVariable UUID activity_id,@RequestBody CustomerModel model){
         var response=customerServices.update(activity_id,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
@@ -36,7 +37,7 @@ public class CustomerController {
        }
     }
     @DeleteMapping("/delete/{activity_id}")
-    public ResponseEntity<String> delete(@PathVariable int activity_id){
+    public ResponseEntity<String> delete(@PathVariable UUID activity_id){
         var response=customerServices.deleteById(activity_id);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer have been deleted with Success", HttpStatus.OK);

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/coach")
@@ -21,7 +22,7 @@ public class CoachController {
     }
 
     @PostMapping("/add/{activity_id}")
-    public ResponseEntity<String> add(@PathVariable int activity_id, @RequestBody CoachModel model) {
+    public ResponseEntity<String> add(@PathVariable UUID activity_id, @RequestBody CoachModel model) {
         var activityResponse = activityServices.findById(activity_id);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             model.setActivityCoach(activityResponse.getData());
@@ -38,7 +39,7 @@ public class CoachController {
     }
 
     @PutMapping("/update/{activity_id}/{coach_id}")
-    public ResponseEntity<String> update(@PathVariable int activity_id,@PathVariable int coach_id, @RequestBody CoachModel model) {
+    public ResponseEntity<String> update(@PathVariable UUID activity_id,@PathVariable UUID coach_id, @RequestBody CoachModel model) {
 
         var activityResponse = activityServices.findById(activity_id);
         if (activityResponse.getStatus() == HttpStatus.OK) {
@@ -67,7 +68,7 @@ public class CoachController {
         }
     }
     @DeleteMapping("/delete/{coach_id}")
-    public ResponseEntity<String> deleteById(@PathVariable int coach_id) {
+    public ResponseEntity<String> deleteById(@PathVariable UUID coach_id) {
         var response = coachServices.deleteById(coach_id);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), HttpStatus.OK);

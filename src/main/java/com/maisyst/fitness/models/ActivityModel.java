@@ -6,13 +6,14 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.List;
+import java.util.UUID;
 
 @Entity(name = "activity")
 public class ActivityModel {
     @Id
     @Column(name = "activity_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int activityId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID activityId;
     @Column(nullable = false, unique = true)
     private String label;
     @Column(nullable = false)
@@ -38,7 +39,7 @@ public class ActivityModel {
     }
 
 
-    public ActivityModel(int activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions, List<PlanningModel> plannings) {
+    public ActivityModel(UUID activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions, List<PlanningModel> plannings) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
@@ -55,7 +56,7 @@ public class ActivityModel {
         this.plannings = plannings;
     }
 
-    public ActivityModel(int activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions) {
+    public ActivityModel(UUID activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
@@ -63,13 +64,13 @@ public class ActivityModel {
         this.subscriptions = subscriptions;
     }
 
-    public ActivityModel(int activityId, String label, String description) {
+    public ActivityModel(UUID activityId, String label, String description) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
     }
 
-    public int getActivityId() {
+    public UUID getActivityId() {
         return activityId;
     }
 
@@ -97,7 +98,7 @@ public class ActivityModel {
         this.coach = coach;
     }
 
-    public void setActivityId(int activityId) {
+    public void setActivityId(UUID activityId) {
         this.activityId = activityId;
     }
 

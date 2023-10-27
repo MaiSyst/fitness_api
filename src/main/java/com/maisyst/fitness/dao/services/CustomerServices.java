@@ -9,9 +9,11 @@ import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.models.CustomerModel;
 import com.maisyst.fitness.models.SubscribeModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.maisyst.fitness.utils.MaiUtils.getDateSubscription;
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
@@ -41,7 +43,7 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription, int activity_id, CustomerModel model) {
+    public MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription, UUID activity_id, CustomerModel model) {
         try {
             var subscriptionResponse = subscriptionServices.findByType(typeSubscription);
             var activityModelMaiResponse = activityServices.findById(activity_id);
@@ -52,8 +54,8 @@ public class CustomerServices implements ICustomerServices {
                         model.getLastName(),
                         model.getYearOfBirth(),
                         model.getAddress(),
-                        model.getEmail(),
-                        model.getPassword()
+                        model.getUsername(),
+                        new BCryptPasswordEncoder().encode(model.getPassword())
                 ));
                 var moment = getDateSubscription(stringToTypeSubscription(typeSubscription));
                 subscriptionResponse.getData().getActivities().add(activityModelMaiResponse.getData());
@@ -74,7 +76,7 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(Integer id) {
+    public MaiResponse<String> deleteById(UUID id) {
         try {
             var customerResponse = customerRepository.findById(id);
             if (customerResponse.isPresent()) {
@@ -89,7 +91,7 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<CustomerModel> findById(Integer id) {
+    public MaiResponse<CustomerModel> findById(UUID id) {
        try {
             var customerResponse = customerRepository.findById(id);
             if (customerResponse.isPresent()) {
@@ -118,12 +120,21 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<Integer> ids) {
+    public MaiResponse<String> deleteMany(List<UUID> ids) {
         return null;
     }
 
     @Override
-    public MaiResponse<CustomerModel> update(Integer id, CustomerModel model) {
+    public MaiResponse<CustomerModel> update(UUID id, CustomerModel model) {
         return null;
+    }
+
+    @Override
+    public MaiResponse<CustomerModel> findByUsername(String username) {
+        var response=customerRepository.findByUsername(username);
+        if(response.isPresent()){
+            return new MaiResponse.MaiSuccess<>(response.get(),HttpStatus.OK);
+        }
+        return new MaiResponse.MaiError<>("Customer don't exist",HttpStatus.NO_CONTENT);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
@@ -33,7 +34,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(int id) {
+    public MaiResponse<String> deleteById(UUID id) {
         try {
             subscribeRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Subscribe has been deleted", HttpStatus.OK);
@@ -43,7 +44,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> findById(int id) {
+    public MaiResponse<SubscribeModel> findById(UUID id) {
         try {
             var response = subscribeRepository.findById(id);
             if (response.isPresent()) {
@@ -76,7 +77,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<Integer> ids) {
+    public MaiResponse<String> deleteMany(List<UUID> ids) {
         try {
             subscribeRepository.deleteAllById(ids);
             return new MaiResponse.MaiSuccess<>("Subscribes has been deleted", HttpStatus.OK);
@@ -86,7 +87,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> update(int id, SubscribeModel model) {
+    public MaiResponse<SubscribeModel> update(UUID id, SubscribeModel model) {
         try {
             var result = subscribeRepository.findById(id);
             if (result.isPresent()) {
@@ -103,12 +104,12 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> updateCustomerSubscription(int subscribeId, SubscriptionModel model) {
+    public MaiResponse<SubscribeModel> updateCustomerSubscription(UUID subscribeId, SubscriptionModel model) {
         return null;
     }
 
     @Override
-    public MaiResponse<SubscribeModel> updateSubscribeCustomer(int subscribeId, CustomerModel model) {
+    public MaiResponse<SubscribeModel> updateSubscribeCustomer(UUID subscribeId, CustomerModel model) {
         return null;
     }
 
@@ -119,7 +120,8 @@ public class SubscribeServices implements ISubscribeServices {
             final String query = "SELECT * from subscribe,customer as c,subscription as sub WHERE subscribe.subscription_id=sub.subscription_id and subscribe.customer_id=c.customer_id";
             var response = jdbcTemplate.query(query,
                     (rs, rows) -> {
-                        CustomerModel customerModel = new CustomerModel(rs.getInt("customer_id"),
+                        CustomerModel customerModel = new CustomerModel(
+                                UUID.fromString(rs.getString("customer_id")),
                                 rs.getString("first_name"),
                                 rs.getString("last_name"),
                                 rs.getDate("year_of_birth"),
@@ -131,9 +133,9 @@ public class SubscribeServices implements ISubscribeServices {
                         SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));
                         List<ActivityModel> activities = jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id='" + rs.getString("subscription_id") + "'",
                                 (rs1, rows1) -> {
-                                    ActivityModel activityModel = new ActivityModel(rs1.getInt("activity_id"), rs1.getString("label"), rs1.getString("description"));
+                                    ActivityModel activityModel = new ActivityModel(UUID.fromString(rs1.getString("activity_id")), rs1.getString("label"), rs1.getString("description"));
                                     var coach = jdbcTemplate.query("SELECT * FROM coach WHERE coach.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new CoachModel(
-                                            rs2.getInt("coach_id"),
+                                            UUID.fromString(rs2.getString("coach_id")),
                                             rs2.getString("first_name"),
                                             rs2.getString("last_name"),
                                             rs2.getString("phone"),
@@ -142,7 +144,7 @@ public class SubscribeServices implements ISubscribeServices {
                                     ));
                                     //int planningId, Date date, Time start_time, Time end_time, RoomModel room
                                     var planning = jdbcTemplate.query("SELECT * FROM planning,room WHERE planning.room_id=room.room_id AND planning.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new PlanningModel(
-                                            rs2.getInt("planning_id"),
+                                           UUID.fromString( rs2.getString("planning_id")),
                                             rs2.getDate("date"),
                                             rs2.getTime("start_time"),
                                             rs2.getTime("end_time"),
@@ -158,7 +160,7 @@ public class SubscribeServices implements ISubscribeServices {
 
                         subscriptionModel.setActivities(activities);
                         return new SubscribeModel(
-                                rs.getInt("subscribe_id"),
+                                UUID.fromString(rs.getString("subscribe_id")),
                                 rs.getDate("date_start"),
                                 rs.getDate("date_end"),
                                 rs.getBoolean("is_active"),

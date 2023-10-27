@@ -5,13 +5,15 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.UUID;
+
 
 @Entity(name = "coach")
 public class CoachModel {
     @Id
     @Column(name = "coach_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int coachId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID coachId;
     @Column(name = "first_name",nullable = false)
     private String firstName;
     @Column(name = "last_name",nullable = false)
@@ -40,7 +42,7 @@ public class CoachModel {
         this.activityCoach = activityCoach;
     }
 
-    public CoachModel(int coachId, String firstName, String lastName, String phone, String address, String speciality, ActivityModel activityCoach) {
+    public CoachModel(UUID coachId, String firstName, String lastName, String phone, String address, String speciality, ActivityModel activityCoach) {
         this.coachId = coachId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -49,7 +51,7 @@ public class CoachModel {
         this.speciality = speciality;
         this.activityCoach = activityCoach;
     }
-      public CoachModel(int coachId, String firstName, String lastName, String phone, String address, String speciality) {
+      public CoachModel(UUID coachId, String firstName, String lastName, String phone, String address, String speciality) {
         this.coachId = coachId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -100,11 +102,11 @@ public class CoachModel {
         this.speciality = speciality;
     }
 
-    public int getCoachId() {
+    public UUID getCoachId() {
         return coachId;
     }
 
-    public void setCoachId(int coachId) {
+    public void setCoachId(UUID coachId) {
         this.coachId = coachId;
     }
 }

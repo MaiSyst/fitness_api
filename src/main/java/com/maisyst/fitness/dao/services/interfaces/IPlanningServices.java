@@ -4,15 +4,16 @@ import com.maisyst.fitness.models.PlanningModel;
 import com.maisyst.fitness.utils.MaiResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IPlanningServices{
-    MaiResponse<PlanningModel> insert(int activity_id,String room_id,PlanningModel model);
-    MaiResponse<String> deleteById(int id);
-    MaiResponse<PlanningModel> findById(int id);
+    MaiResponse<PlanningModel> insert(UUID activity_id, String room_id, PlanningModel model);
+    MaiResponse<String> deleteById(UUID id);
+    MaiResponse<PlanningModel> findById(UUID id);
 
     MaiResponse<String> insertMany(List<PlanningModel> models);
 
-    MaiResponse<String> deleteMany(List<Integer> ids);
-    MaiResponse<PlanningModel> update(int activity_id,String room_id, PlanningModel model);
+    MaiResponse<String> deleteMany(List<UUID> ids);
+    MaiResponse<PlanningModel> update(UUID activity_id,String room_id, PlanningModel model);
     MaiResponse<List<PlanningModel>> findAllWithActivityAndRoom();
 }

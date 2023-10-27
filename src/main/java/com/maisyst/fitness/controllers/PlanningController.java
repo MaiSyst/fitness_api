@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/planning")
@@ -18,7 +19,7 @@ public class PlanningController {
     }
 
     @PostMapping("/add/{activity_id}/{room_id}")
-    public ResponseEntity<String> add(@PathVariable int activity_id,@PathVariable String room_id,@RequestBody PlanningModel model){
+    public ResponseEntity<String> add(@PathVariable UUID activity_id, @PathVariable String room_id, @RequestBody PlanningModel model){
          var response=planningServices.insert(activity_id,room_id,model);
        if(response.getStatus()== HttpStatus.OK) {
            return new ResponseEntity<>("Planning was added with Success", HttpStatus.OK);

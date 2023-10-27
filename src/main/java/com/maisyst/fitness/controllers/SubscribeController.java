@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/subscribe")
@@ -26,7 +27,7 @@ public class SubscribeController {
         }
     }
     @GetMapping("/fetchById/{subscribe_id}")
-    public ResponseEntity<SubscribeModel> fetchById(@PathVariable int subscribe_id){
+    public ResponseEntity<SubscribeModel> fetchById(@PathVariable UUID subscribe_id){
         var response=subscribeServices.findById(subscribe_id);
         if(response.getStatus()== HttpStatus.OK){
             return new ResponseEntity<>(response.getData(),response.getStatus());

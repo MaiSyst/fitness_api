@@ -4,6 +4,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.maisyst.fitness.models.UserModel;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 import static com.maisyst.fitness.utils.MaiUtils.stringToAuthRole;
 
 /**
@@ -19,7 +21,7 @@ public class MaiJwtDecodeToUserModel {
      */
     public UserModel convertNow(DecodedJWT decodedJWT) {
         return new UserModel(
-                Integer.parseInt(decodedJWT.getSubject()),
+                UUID.fromString(decodedJWT.getSubject()),
                 String.valueOf(decodedJWT.getClaim("username")),
                 stringToAuthRole(String.valueOf(decodedJWT.getClaim("role"))),
                 Boolean.getBoolean(String.valueOf(decodedJWT.getClaim("isAccountActivate")))

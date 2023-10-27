@@ -2,11 +2,13 @@ package com.maisyst.fitness.models;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity(name = "movies")
 public class MoviesModels {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column
     private String videoName;
     @Column
@@ -14,7 +16,7 @@ public class MoviesModels {
     @Column
     private String fitnessType;
 
-    public MoviesModels(Integer id, String videoName, String duration, String fitnessType) {
+    public MoviesModels(UUID id, String videoName, String duration, String fitnessType) {
         this.id = id;
         this.videoName = videoName;
         this.duration = duration;
@@ -28,11 +30,11 @@ public class MoviesModels {
     }
     public MoviesModels(){}
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
