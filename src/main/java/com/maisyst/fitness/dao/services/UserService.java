@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class UserService implements IUserService {
@@ -109,6 +110,7 @@ public class UserService implements IUserService {
                             case ADMIN -> 1;
                             default -> 30;
                         };
+                        System.out.println("Token validate"+daysValidate);
                         return new MaiResponse.MaiSuccess<>(new AuthResponse(
                                 model.getUsername(),
                                 maiJWTConfig.createToken(model.getUserId(), model.getUsername(), model.getRole(), model.getIsActive(), daysValidate),
@@ -137,7 +139,7 @@ public class UserService implements IUserService {
 
             return new MaiResponse.MaiSuccess<>(new AuthResponse(
                     responseUsername.getData().getUsername(),
-                    maiJWTConfig.createToken(model.getCustomerId(), model.getUsername(), authRequest.role(), model.getIsActive(), 30),
+                    maiJWTConfig.createToken(UUID.fromString(model.getCustomerId()), model.getUsername(), authRequest.role(), model.getIsActive(), 30),
                     authRequest.role(),
                     responseUsername.getData().getIsActive()
             ), HttpStatus.OK);
@@ -146,15 +148,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public MaiResponse<Map<String, String>> checkToken(String token) {
+    public MaiResponse<Map<String, Object>> checkToken(String token) {
         var response = maiJwtDecoder.decodedJWT(token);
         if (response == null) {
-            return new MaiResponse.MaiError<>("Invalid token", HttpStatus.BAD_REQUEST);
+            return new MaiResponse.MaiError<>("Invalid token", HttpStatus.FORBIDDEN);
         }
+
         return new MaiResponse.MaiSuccess<>(new HashMap<>() {{
             put("username", response.getClaim("username").asString());
             put("role", response.getClaim("role").asString());
-            put("isActive", response.getClaim("isAccountActivate").asString());
+            put("isActive", response.getClaim("isAccountActivate").asBoolean());
             put("token", token);
         }}, HttpStatus.OK);
     }

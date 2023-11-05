@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
 @Service
@@ -94,6 +95,16 @@ public class ActivityServices implements IActivityServices {
 
     @Override
     public MaiResponse<List<ActivityModel>> fetchAll() {
+       try {
+           var response=activityRepository.findAll();
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+           return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public MaiResponse<List<ActivityModel>> fetchAllWithCoachSubsPlanning() {
         try {
             final String query = "SELECT * from activity";
             var response = jdbcTemplate.query(query, (rs, rows) -> {
@@ -120,7 +131,7 @@ public class ActivityServices implements IActivityServices {
                 );
                 List<PlanningModel> planningModel = jdbcTemplate.query(queryPlanning, (rsPlanning, rows1) -> new PlanningModel(
                         UUID.fromString(rsPlanning.getString("planning_id")),
-                        rsPlanning.getDate("date"),
+                        stringToMaiDay(rsPlanning.getString("day")),
                         rsPlanning.getTime("start_time"),
                         rsPlanning.getTime("end_time"),
                         new RoomModel(rsPlanning.getString("room_id"), rsPlanning.getString("room_name"))
@@ -154,5 +165,15 @@ public class ActivityServices implements IActivityServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @Override
+    public MaiResponse<List<ActivityModel>> searchIt(String query) {
+         try {
+           var response=activityRepository.searchIt(query);
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+           return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

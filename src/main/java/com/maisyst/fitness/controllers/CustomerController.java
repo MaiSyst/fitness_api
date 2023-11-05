@@ -1,12 +1,13 @@
 package com.maisyst.fitness.controllers;
 
 import com.maisyst.fitness.dao.services.CustomerServices;
-import com.maisyst.fitness.utils.TypeSubscription;
+import com.maisyst.fitness.models.DeleteManyRequest;
 import com.maisyst.fitness.models.CustomerModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,27 +19,27 @@ public class CustomerController {
         this.customerServices=customerServices;
     }
 
-    @PostMapping("/add/{subscription_type}/{activity_id}")
-    public ResponseEntity<String> add(@PathVariable String subscription_type, @PathVariable UUID activity_id, @RequestBody CustomerModel model){
-        var response=customerServices.insertWithSubscription(subscription_type,activity_id,model);
+    @PostMapping("/add/{subscriptionType}/{activityId}")
+    public ResponseEntity<String> add(@PathVariable String subscriptionType, @PathVariable UUID activityId, @RequestBody CustomerModel model){
+        var response=customerServices.insertWithSubscription(subscriptionType,activityId,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
        }else{
            return new ResponseEntity<>(response.getMessage(),response.getStatus());
        }
     }
-    @PutMapping("/update/{activity_id}")
-    public ResponseEntity<String> update(@PathVariable UUID activity_id,@RequestBody CustomerModel model){
-        var response=customerServices.update(activity_id,model);
+    @PutMapping("/update/{subscriptionType}/{activityId}/{customId}")
+    public ResponseEntity<String> update(@PathVariable String subscriptionType,@PathVariable String activityId,@PathVariable String customId,@RequestBody CustomerModel model){
+        var response=customerServices.update(UUID.fromString(activityId),subscriptionType,customId,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
        }else{
            return new ResponseEntity<>(response.getMessage(),response.getStatus());
        }
     }
-    @DeleteMapping("/delete/{activity_id}")
-    public ResponseEntity<String> delete(@PathVariable UUID activity_id){
-        var response=customerServices.deleteById(activity_id);
+    @PostMapping("/delete")
+    public ResponseEntity<String> delete(@RequestBody DeleteManyRequest<String> requestToDeleteMany){
+        var response=customerServices.deleteMany(requestToDeleteMany.ids());
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer have been deleted with Success", HttpStatus.OK);
        }else{

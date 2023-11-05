@@ -1,9 +1,10 @@
 package com.maisyst.fitness.utils;
 
 public enum TypeSubscription {
-    STANDARD("Un mois"),
-    PRIME("Six mois"),
-    GOLD("Une annee");
+    STANDARD("Un(1) mois"),
+    PRIME("Six(6) mois"),
+    GOLD("Une année");
+    
 
     private String value;
 

@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ICustomerRepository extends JpaRepository<CustomerModel, UUID> {
+public interface ICustomerRepository extends JpaRepository<CustomerModel, String> {
     Optional<CustomerModel>findByUsername(String username);
 }

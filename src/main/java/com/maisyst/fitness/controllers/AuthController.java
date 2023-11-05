@@ -32,6 +32,7 @@ public class AuthController {
     public ResponseEntity<Object> signIn(@RequestBody AuthRequest authRequest) {
         var response = userService.signIn(authRequest);
         if (response.getStatus() == HttpStatus.OK) {
+            System.out.println(response.getData());
             return new ResponseEntity<>(response.getData(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(response.getMessage(), response.getStatus());

@@ -2,6 +2,7 @@ package com.maisyst.fitness.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.sql.Date;
 import java.util.HashSet;
@@ -12,8 +13,8 @@ import java.util.UUID;
 public class CustomerModel {
     @Id
     @Column(name = "customer_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID customerId;
+    @UuidGenerator
+    private String customerId;
     @Column(name = "first_name",nullable = false)
     private String firstName;
     @Column(name = "last_name",nullable = false)
@@ -37,7 +38,7 @@ public class CustomerModel {
 
     }
 
-    public CustomerModel(UUID customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password, Set<SubscribeModel> subscribes) {
+    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password, Set<SubscribeModel> subscribes) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -49,7 +50,7 @@ public class CustomerModel {
         this.isActive=true;
     }
 
-    public CustomerModel(UUID customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password) {
+    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -79,7 +80,7 @@ public CustomerModel(String firstName, String lastName, Date yearOfBirth, String
         this.password=password;
         this.isActive=true;
     }
-    public UUID getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 

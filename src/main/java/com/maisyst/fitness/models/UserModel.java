@@ -1,6 +1,7 @@
 package com.maisyst.fitness.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.maisyst.fitness.utils.AuthRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;

@@ -34,12 +34,7 @@ public class CustomerServices implements ICustomerServices {
 
     @Override
     public MaiResponse<CustomerModel> insert(CustomerModel model) {
-        try {
-            var customerResponse = customerRepository.save(model);
-            return new MaiResponse.MaiSuccess<>(customerResponse, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return null;
     }
 
     @Override
@@ -76,7 +71,7 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(UUID id) {
+    public MaiResponse<String> deleteById(String id) {
         try {
             var customerResponse = customerRepository.findById(id);
             if (customerResponse.isPresent()) {
@@ -91,8 +86,8 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<CustomerModel> findById(UUID id) {
-       try {
+    public MaiResponse<CustomerModel> findById(String id) {
+        try {
             var customerResponse = customerRepository.findById(id);
             if (customerResponse.isPresent()) {
                 return new MaiResponse.MaiSuccess<>(customerResponse.get(), HttpStatus.OK);
@@ -120,21 +115,62 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<UUID> ids) {
+    public MaiResponse<String> deleteMany(List<String> ids) {
         return null;
     }
 
+
     @Override
-    public MaiResponse<CustomerModel> update(UUID id, CustomerModel model) {
-        return null;
+    public MaiResponse<CustomerModel> update(UUID activityId, String subscriptionType, String customerId, CustomerModel model) {
+        try {
+            var subscriptionResponse = subscriptionServices.findByType(subscriptionType);
+            var activityModelMaiResponse = activityServices.findById(activityId);
+            if (subscriptionResponse.getStatus() == HttpStatus.OK && activityModelMaiResponse.getStatus() == HttpStatus.OK) {
+                var responseCustomer = customerRepository.findById(customerId);
+                if (responseCustomer.isPresent()) {
+
+                    var moment = getDateSubscription(stringToTypeSubscription(subscriptionType));
+
+                    subscriptionResponse.getData().getActivities().add(activityModelMaiResponse.getData());
+                    responseCustomer.get().setAddress(model.getAddress());
+                    responseCustomer.get().setFirstName(model.getFirstName());
+                    responseCustomer.get().setLastName(model.getLastName());
+                    responseCustomer.get().setYearOfBirth(model.getYearOfBirth());
+                    responseCustomer.get().setUsername(model.getUsername());
+                    responseCustomer.get().setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
+                    customerRepository.save(responseCustomer.get());
+
+                    //var subscribeRes = subscribeServices.updateSubscribeCustomer(customerId,new SubscribeModel(su,moment[0], moment[1], responseCustomer.get().getIsActive(), responseCustomer.get(), subscriptionResponse.getData()));
+                    return new MaiResponse.MaiSuccess<>(responseCustomer.get(), HttpStatus.OK);
+//                    if (subscribeRes.getStatus() == HttpStatus.OK) {
+//
+//                    } else {
+//                        return new MaiResponse.MaiError<>(subscribeRes.getMessage(), HttpStatus.NOT_FOUND);
+//                    }
+                } else {
+                    return new MaiResponse.MaiError<>("Customer not found.", HttpStatus.NOT_FOUND);
+                }
+            } else {
+                var error = subscriptionResponse.getMessage() == null || subscriptionResponse.getMessage().isBlank() ? activityModelMaiResponse.getMessage() : subscriptionResponse.getMessage();
+                return new MaiResponse.MaiError<>(error, HttpStatus.NOT_FOUND);
+            }
+
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
     public MaiResponse<CustomerModel> findByUsername(String username) {
-        var response=customerRepository.findByUsername(username);
-        if(response.isPresent()){
-            return new MaiResponse.MaiSuccess<>(response.get(),HttpStatus.OK);
+        var response = customerRepository.findByUsername(username);
+        if (response.isPresent()) {
+            return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
         }
-        return new MaiResponse.MaiError<>("Customer don't exist",HttpStatus.NO_CONTENT);
+        return new MaiResponse.MaiError<>("Customer don't exist", HttpStatus.NO_CONTENT);
+    }
+
+    @Override
+    public MaiResponse<CustomerModel> update(String id, CustomerModel model) {
+        return null;
     }
 }

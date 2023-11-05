@@ -98,7 +98,7 @@ public class CoachServices implements ICoachServices {
     public MaiResponse<String> deleteMany(List<UUID> ids) {
         try {
             coachRepository.deleteAllById(ids);
-            return new MaiResponse.MaiSuccess<>("Activities was deleted", HttpStatus.OK);
+            return new MaiResponse.MaiSuccess<>("Coach was deleted", HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

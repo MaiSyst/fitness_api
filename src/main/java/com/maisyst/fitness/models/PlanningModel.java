@@ -1,6 +1,9 @@
 package com.maisyst.fitness.models;
 
+import com.maisyst.fitness.utils.MaiDay;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -13,7 +16,8 @@ public class PlanningModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID planningId;
     @Column(nullable = false)
-    private Date date;
+    @Enumerated(value = EnumType.STRING)
+    private MaiDay day;
     @Column(nullable = false,name = "start_time")
     private Time startTime;
     @Column(nullable = false,name = "end_time")
@@ -27,32 +31,32 @@ public class PlanningModel {
     public PlanningModel() {
     }
 
-    public PlanningModel(Date date, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
-        this.date = date;
+    public PlanningModel(MaiDay day, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
+        this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
         this.room = room;
         this.activity = activity;
     }
 
-    public PlanningModel(UUID planningId, Date date, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
+    public PlanningModel(UUID planningId, MaiDay day, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
         this.planningId = planningId;
-        this.date = date;
+        this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
         this.room = room;
         this.activity = activity;
     }
 
-    public PlanningModel(UUID planningId, Date date, Time startTime, Time endTime, RoomModel room) {
-        this.date = date;
+    public PlanningModel(UUID planningId, MaiDay day, Time startTime, Time endTime, RoomModel room) {
+        this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
         this.room = room;
         this.planningId = planningId;
     }
-     public PlanningModel(UUID planningId, Date date, Time startTime, Time endTime, ActivityModel activity) {
-        this.date = date;
+     public PlanningModel(UUID planningId, MaiDay day, Time startTime, Time endTime, ActivityModel activity) {
+        this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
         this.activity = activity;
@@ -67,12 +71,12 @@ public class PlanningModel {
         this.planningId = planningId;
     }
 
-    public Date getDate() {
-        return date;
+    public MaiDay getDay() {
+        return day;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDay(MaiDay day) {
+        this.day = day;
     }
 
     public Time getStartTime() {

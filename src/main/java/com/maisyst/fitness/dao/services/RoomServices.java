@@ -4,15 +4,19 @@ import com.maisyst.fitness.dao.services.interfaces.IRoomServices;
 import com.maisyst.fitness.dao.repositories.IRoomRepository;
 import com.maisyst.fitness.models.ActivityModel;
 import com.maisyst.fitness.models.PlanningModel;
+import com.maisyst.fitness.models.RoomWithTotalSubscribeResponse;
 import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.models.RoomModel;
 import com.maisyst.fitness.utils.MaiUID;
+import org.hibernate.internal.util.BytesHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
 
 @Service
 public class RoomServices implements IRoomServices {
@@ -27,7 +31,6 @@ public class RoomServices implements IRoomServices {
     @Override
     public MaiResponse<RoomModel> insert(RoomModel model) {
         try {
-            model.setRoomId(MaiUID.generate());
             return new MaiResponse.MaiSuccess<>(roomRepository.save(model), HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -38,9 +41,22 @@ public class RoomServices implements IRoomServices {
     @Override
     public MaiResponse<String> deleteById(String id) {
         try {
-            roomRepository.deleteById(id);
+            roomRepository.deleteAllById(List.of(id));
+            System.out.println(id);
             return new MaiResponse.MaiSuccess<>("Room have been deleted", HttpStatus.OK);
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public MaiResponse<String> deleteByRoomName(String roomName) {
+        try {
+            roomRepository.deleteByRoomName(roomName);
+            return new MaiResponse.MaiSuccess<>("Room have been deleted", HttpStatus.OK);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -60,6 +76,37 @@ public class RoomServices implements IRoomServices {
     }
 
     @Override
+    public MaiResponse<List<RoomWithTotalSubscribeResponse>> fetchRoomWithTotalSubscribeModel() {
+        try {
+            String query = "SELECT * FROM room";
+            var data = jdbcTemplate.query(query, (rs, rowNum) -> {
+                var countSubscribe = jdbcTemplate.query("SELECT activity_id FROM planning WHERE planning.room_id=?",
+                        (rs1, rowNum1) -> {
+                            System.out.println("Activity=" + rs1.getString("activity_id"));
+                            String query2 = "SELECT subscription_id from concern WHERE concern.activity_id=?";
+                            var subscriptions = jdbcTemplate.query(query2,
+                                    (rs2, rowNum2) -> {
+                                        String query3 = "SELECT count(*) from subscribe WHERE subscribe.subscription_id=?";
+                                        var count = jdbcTemplate.queryForObject(query3, Integer.class, UUID.nameUUIDFromBytes(rs2.getBytes("subscription_id")));
+                                        return count;
+                                    }, UUID.nameUUIDFromBytes(rs1.getBytes("activity_id")));
+                            return subscriptions.stream().reduce(0, Integer::sum);
+                        }, rs.getString("room_id"));
+                var sum = countSubscribe.stream().reduce(0, Integer::sum);
+                return new RoomWithTotalSubscribeResponse(
+                        rs.getString("room_id"),
+                        rs.getString("room_name"),
+                        sum
+                );
+            });
+            return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
+        } catch (Exception ex) {
+            System.out.println("Error=" + ex.getMessage());
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
     public MaiResponse<List<RoomModel>> fetchAll() {
         try {
             String query = "SELECT * FROM room";
@@ -67,7 +114,7 @@ public class RoomServices implements IRoomServices {
                 var planning = jdbcTemplate.query("SELECT * FROM planning,activity WHERE planning.activity_id =activity.activity_id AND planning.room_id='" + rs.getString("room_id") + "'",
                         (rs1, rowNum1) -> new PlanningModel(
                                 UUID.fromString(rs1.getString("planning_id")),
-                                rs1.getDate("date"),
+                                stringToMaiDay(rs1.getString("day")),
                                 rs1.getTime("start_time"),
                                 rs1.getTime("end_time"),
                                 new ActivityModel(

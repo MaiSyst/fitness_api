@@ -26,9 +26,9 @@ public class SubscribeController {
             return new ResponseEntity<>(null,response.getStatus());
         }
     }
-    @GetMapping("/fetchById/{subscribe_id}")
-    public ResponseEntity<SubscribeModel> fetchById(@PathVariable UUID subscribe_id){
-        var response=subscribeServices.findById(subscribe_id);
+    @GetMapping("/fetchById/{subscribeId}")
+    public ResponseEntity<SubscribeModel> fetchById(@PathVariable String subscribeId){
+        var response=subscribeServices.findById(subscribeId);
         if(response.getStatus()== HttpStatus.OK){
             return new ResponseEntity<>(response.getData(),response.getStatus());
         }else{

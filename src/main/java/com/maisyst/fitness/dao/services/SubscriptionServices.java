@@ -26,7 +26,6 @@ public class SubscriptionServices implements ISubscriptionServices {
     @Override
     public MaiResponse<SubscriptionModel> insert(SubscriptionModel model) {
         try {
-            model.setSubscriptionId(MaiUID.generate());
             model.setLabel(model.getType().getValue());
             model.setPrice(getPriceSubscription(model.getType()));
             return new MaiResponse.MaiSuccess<>(subscriptionRepository.save(model), HttpStatus.OK);
@@ -63,7 +62,6 @@ public class SubscriptionServices implements ISubscriptionServices {
     @Override
     public MaiResponse<List<SubscriptionModel>> fetchAll() {
          try {
-
             return new MaiResponse.MaiSuccess<>(subscriptionRepository.findAll(), HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

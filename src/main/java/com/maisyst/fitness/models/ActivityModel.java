@@ -19,6 +19,7 @@ public class ActivityModel {
     @Column(nullable = false)
     private String description;
     @OneToMany(mappedBy = "activityCoach", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<CoachModel> coach = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
@@ -33,6 +34,7 @@ public class ActivityModel {
     @JsonIgnore
     private List<SubscriptionModel> subscriptions=new ArrayList<>();
     @OneToMany(mappedBy = "activity")
+    @JsonIgnore
     private List<PlanningModel> plannings=new ArrayList<>();
 
     public ActivityModel() {
@@ -66,6 +68,10 @@ public class ActivityModel {
 
     public ActivityModel(UUID activityId, String label, String description) {
         this.activityId = activityId;
+        this.label = label;
+        this.description = description;
+    }
+    public ActivityModel(String label, String description) {
         this.label = label;
         this.description = description;
     }

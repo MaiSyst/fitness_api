@@ -2,7 +2,7 @@ package com.maisyst.fitness.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.maisyst.fitness.models.AuthRole;
+import com.maisyst.fitness.utils.AuthRole;
 import com.maisyst.fitness.security.env.MaiJWTProperties;
 import org.springframework.stereotype.Component;
 

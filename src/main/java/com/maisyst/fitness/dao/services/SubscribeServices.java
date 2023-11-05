@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
 @Service
@@ -34,7 +35,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(UUID id) {
+    public MaiResponse<String> deleteById(String id) {
         try {
             subscribeRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Subscribe has been deleted", HttpStatus.OK);
@@ -44,7 +45,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> findById(UUID id) {
+    public MaiResponse<SubscribeModel> findById(String id) {
         try {
             var response = subscribeRepository.findById(id);
             if (response.isPresent()) {
@@ -77,7 +78,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<UUID> ids) {
+    public MaiResponse<String> deleteMany(List<String> ids) {
         try {
             subscribeRepository.deleteAllById(ids);
             return new MaiResponse.MaiSuccess<>("Subscribes has been deleted", HttpStatus.OK);
@@ -87,7 +88,7 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> update(UUID id, SubscribeModel model) {
+    public MaiResponse<SubscribeModel> update(String id, SubscribeModel model) {
         try {
             var result = subscribeRepository.findById(id);
             if (result.isPresent()) {
@@ -104,12 +105,12 @@ public class SubscribeServices implements ISubscribeServices {
     }
 
     @Override
-    public MaiResponse<SubscribeModel> updateCustomerSubscription(UUID subscribeId, SubscriptionModel model) {
+    public MaiResponse<SubscribeModel> updateCustomerSubscription(String subscribeId, SubscriptionModel model) {
         return null;
     }
 
     @Override
-    public MaiResponse<SubscribeModel> updateSubscribeCustomer(UUID subscribeId, CustomerModel model) {
+    public MaiResponse<SubscribeModel> updateSubscribeCustomer(String subscribeId, CustomerModel model) {
         return null;
     }
 
@@ -121,7 +122,7 @@ public class SubscribeServices implements ISubscribeServices {
             var response = jdbcTemplate.query(query,
                     (rs, rows) -> {
                         CustomerModel customerModel = new CustomerModel(
-                                UUID.fromString(rs.getString("customer_id")),
+                                rs.getString("customer_id"),
                                 rs.getString("first_name"),
                                 rs.getString("last_name"),
                                 rs.getDate("year_of_birth"),
@@ -145,7 +146,7 @@ public class SubscribeServices implements ISubscribeServices {
                                     //int planningId, Date date, Time start_time, Time end_time, RoomModel room
                                     var planning = jdbcTemplate.query("SELECT * FROM planning,room WHERE planning.room_id=room.room_id AND planning.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new PlanningModel(
                                            UUID.fromString( rs2.getString("planning_id")),
-                                            rs2.getDate("date"),
+                                            stringToMaiDay(rs2.getString("day")),
                                             rs2.getTime("start_time"),
                                             rs2.getTime("end_time"),
                                             new RoomModel(
@@ -160,7 +161,7 @@ public class SubscribeServices implements ISubscribeServices {
 
                         subscriptionModel.setActivities(activities);
                         return new SubscribeModel(
-                                UUID.fromString(rs.getString("subscribe_id")),
+                                rs.getString("subscribe_id"),
                                 rs.getDate("date_start"),
                                 rs.getDate("date_end"),
                                 rs.getBoolean("is_active"),

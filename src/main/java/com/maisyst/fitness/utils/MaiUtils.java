@@ -1,7 +1,6 @@
 package com.maisyst.fitness.utils;
 
 import com.maisyst.MaiDateCompare;
-import com.maisyst.fitness.models.AuthRole;
 
 import java.sql.Date;
 
@@ -11,6 +10,39 @@ public final class MaiUtils {
             case "gold" -> TypeSubscription.GOLD;
             case "prime" -> TypeSubscription.PRIME;
             default -> TypeSubscription.STANDARD;
+        };
+    }
+    public static MaiDay stringToMaiDay(String type) {
+        return switch (type.toLowerCase()) {
+            case "monday" -> MaiDay.MONDAY;
+            case "tuesday" -> MaiDay.TUESDAY;
+            case "wednesday" -> MaiDay.WEDNESDAY;
+            case "thursday" -> MaiDay.THURSDAY;
+            case "friday" -> MaiDay.FRIDAY;
+            case "saturday" -> MaiDay.SATURDAY;
+            default  -> MaiDay.SUNDAY;
+        };
+    }
+     public static String maiDayToString(MaiDay type) {
+        return switch (type) {
+            case MONDAY -> "MONDAY";
+            case TUESDAY -> "TUESDAY";
+            case WEDNESDAY -> "WEDNESDAY";
+            case THURSDAY ->"THURSDAY";
+            case FRIDAY -> "FRIDAY";
+            case SATURDAY -> "SATURDAY";
+            default  -> "SUNDAY";
+        };
+    }
+    public static String maiDayToFrench(String type) {
+       return switch (type.toLowerCase()) {
+            case "monday" -> "Lundi";
+            case "tuesday" -> "Mardi";
+            case "wednesday" -> "Mercredi";
+            case "thursday" -> "Jeudi";
+            case "friday" -> "Vendredi";
+            case "saturday" -> "Samedi";
+            default  -> "Dimanche";
         };
     }
 

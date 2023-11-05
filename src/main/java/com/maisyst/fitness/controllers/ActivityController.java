@@ -3,11 +3,12 @@ package com.maisyst.fitness.controllers;
 import com.maisyst.fitness.dao.services.ActivityServices;
 import com.maisyst.fitness.dao.services.CoachServices;
 import com.maisyst.fitness.models.ActivityModel;
+import com.maisyst.fitness.models.DeleteManyRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
@@ -70,9 +71,30 @@ public class ActivityController {
         }
     }
 
-    @DeleteMapping("/delete/{activity_id}")
-    public ResponseEntity<String> delete(@PathVariable UUID activity_id) {
-        var activityResponse = activityServices.deleteById(activity_id);
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(@RequestBody UUID activityId) {
+        var activityResponse = activityServices.deleteById(activityId);
+        if (activityResponse.getStatus() == HttpStatus.OK) {
+            return new ResponseEntity<>(activityResponse.getData(), activityResponse.getStatus());
+        } else {
+            return new ResponseEntity<>(activityResponse.getMessage(), activityResponse.getStatus());
+        }
+    }
+    @PostMapping("/deleteMany")
+    public ResponseEntity<Object> delete(@RequestBody DeleteManyRequest<String> requestToDeleteMany) {
+        var activitiesUUID=new ArrayList<UUID>();
+        requestToDeleteMany.ids().forEach(act->activitiesUUID.add(UUID.fromString(act)));
+        var activityResponse = activityServices.deleteMany(activitiesUUID);
+        if (activityResponse.getStatus() == HttpStatus.OK) {
+            return new ResponseEntity<>(activityResponse.getData(), activityResponse.getStatus());
+        } else {
+            return new ResponseEntity<>(activityResponse.getMessage(), activityResponse.getStatus());
+        }
+    }
+    @GetMapping("/search")
+    @ResponseBody
+    public ResponseEntity<Object> searchIt(@RequestParam String query) {
+        var activityResponse = activityServices.searchIt(query);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(activityResponse.getData(), activityResponse.getStatus());
         } else {

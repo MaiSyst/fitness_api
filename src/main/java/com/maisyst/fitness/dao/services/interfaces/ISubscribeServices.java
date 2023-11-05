@@ -10,17 +10,17 @@ import java.util.UUID;
 
 public interface ISubscribeServices{
     MaiResponse<SubscribeModel> insert(SubscribeModel model);
-     MaiResponse<SubscribeModel> updateCustomerSubscription(UUID subscribeId, SubscriptionModel model);
-    MaiResponse<SubscribeModel> updateSubscribeCustomer(UUID subscribeId, CustomerModel model);
+     MaiResponse<SubscribeModel> updateCustomerSubscription(String subscribeId, SubscriptionModel model);
+    MaiResponse<SubscribeModel> updateSubscribeCustomer(String subscribeId, CustomerModel model);
     MaiResponse<List<SubscribeModel>> findAllWithSubscriptionAndCustomer();
-    MaiResponse<String> deleteById(UUID id);
-    MaiResponse<SubscribeModel> findById(UUID id);
+    MaiResponse<String> deleteById(String id);
+    MaiResponse<SubscribeModel> findById(String id);
 
     MaiResponse<List<SubscribeModel>> fetchAll();
 
     MaiResponse<String> insertMany(List<SubscribeModel> models);
 
-    MaiResponse<String> deleteMany(List<UUID> ids);
-    MaiResponse<SubscribeModel> update(UUID id, SubscribeModel model);
+    MaiResponse<String> deleteMany(List<String> ids);
+    MaiResponse<SubscribeModel> update(String id, SubscribeModel model);
 
 }

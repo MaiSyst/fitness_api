@@ -1,23 +1,23 @@
 package com.maisyst.fitness.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity(name = "room")
 public class RoomModel {
     @Id
     @Column(name = "room_id")
+    @UuidGenerator
     private String roomId;
-    @Column(name = "room_name",nullable = false)
+    @Column(name = "room_name",nullable = false,unique = true)
     private String roomName;
     @OneToMany(mappedBy = "room")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<PlanningModel> plannings=new ArrayList<>();
     public RoomModel() {}
 

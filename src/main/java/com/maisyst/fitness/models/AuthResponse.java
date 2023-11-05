@@ -1,4 +1,6 @@
 package com.maisyst.fitness.models;
 
-public record AuthResponse(String username,String authToken,AuthRole role,boolean isActive) {
+import com.maisyst.fitness.utils.AuthRole;
+
+public record AuthResponse(String username, String token, AuthRole role, boolean isActive) {
 }

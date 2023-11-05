@@ -2,11 +2,14 @@ package com.maisyst.fitness.controllers;
 
 import com.maisyst.fitness.dao.services.RoomServices;
 import com.maisyst.fitness.models.RoomModel;
+import com.maisyst.fitness.models.RoomWithTotalSubscribeResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/room")
@@ -18,10 +21,15 @@ public class RoomController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody RoomModel model) {
+    public ResponseEntity<Object> add(@RequestBody RoomModel model) {
         var response = roomServices.insert(model);
         if (response.getStatus() == HttpStatus.OK) {
-            return new ResponseEntity<>("Room was added with Success", HttpStatus.OK);
+            var roomModel=response.getData();
+            return new ResponseEntity<>(new RoomWithTotalSubscribeResponse(
+                   roomModel.getRoomId(),
+                   roomModel.getRoomName(),
+                    0
+            ), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(response.getMessage(), response.getStatus());
         }
@@ -34,6 +42,15 @@ public class RoomController {
             return new ResponseEntity<>(response.getData(), response.getStatus());
         } else {
             return new ResponseEntity<>(null, response.getStatus());
+        }
+    }
+    @GetMapping("/fetchWithTotalSubscribe")
+    public ResponseEntity<List<RoomWithTotalSubscribeResponse>>fetchRoomWithTotalSubscribeModel() {
+        var response = roomServices.fetchRoomWithTotalSubscribeModel();
+        if (response.getStatus() == HttpStatus.OK) {
+            return new ResponseEntity<>(response.getData(), response.getStatus());
+        } else {
+            return new ResponseEntity<>(new ArrayList<>(), response.getStatus());
         }
     }
 
@@ -56,9 +73,9 @@ public class RoomController {
             return new ResponseEntity<>(roomResponse.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-     @DeleteMapping("/delete/{room_id}")
-    public ResponseEntity<String> delete(@PathVariable String room_id) {
-        var roomResponse = roomServices.deleteById(room_id);
+     @DeleteMapping("/delete/{roomId}")
+    public ResponseEntity<String> delete(@PathVariable String roomId) {
+        var roomResponse = roomServices.deleteById(roomId);
         if (roomResponse.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Room have been deleted", HttpStatus.OK);
         } else {

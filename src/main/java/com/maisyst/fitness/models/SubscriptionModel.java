@@ -2,14 +2,17 @@ package com.maisyst.fitness.models;
 
 import com.maisyst.fitness.utils.TypeSubscription;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity(name = "subscription")
 public class SubscriptionModel {
     @Id()
-    @Column(name = "subscription_id",unique = true)
+    @Column(name = "subscription_id")
+    @UuidGenerator
     private String subscriptionId;
     @Column(nullable = false)
     private String label;
@@ -47,7 +50,14 @@ public class SubscriptionModel {
         this.price = price;
         this.type = type;
     }
-
+     public SubscriptionModel(String label, double price, TypeSubscription type) {
+        this.label = label;
+        this.price = price;
+        this.type = type;
+    }
+    public SubscriptionModel(TypeSubscription type) {
+        this.type = type;
+    }
     public SubscriptionModel(String label, double price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
         this.label = label;
         this.price = price;
