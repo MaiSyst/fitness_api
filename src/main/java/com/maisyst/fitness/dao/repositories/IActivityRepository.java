@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface IActivityRepository extends JpaRepository<ActivityModel, UUID> {
+public interface IActivityRepository extends JpaRepository<ActivityModel, String> {
     @Query(value = "select * from activity where label like concat('%',?1,'%')",nativeQuery = true)
     List<ActivityModel> searchIt(String query);
 }

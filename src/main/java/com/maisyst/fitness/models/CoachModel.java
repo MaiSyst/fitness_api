@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
@@ -12,8 +13,8 @@ import java.util.UUID;
 public class CoachModel {
     @Id
     @Column(name = "coach_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID coachId;
+    @UuidGenerator
+    private String coachId;
     @Column(name = "first_name",nullable = false)
     private String firstName;
     @Column(name = "last_name",nullable = false)
@@ -42,7 +43,7 @@ public class CoachModel {
         this.activityCoach = activityCoach;
     }
 
-    public CoachModel(UUID coachId, String firstName, String lastName, String phone, String address, String speciality, ActivityModel activityCoach) {
+    public CoachModel(String coachId, String firstName, String lastName, String phone, String address, String speciality, ActivityModel activityCoach) {
         this.coachId = coachId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -51,7 +52,7 @@ public class CoachModel {
         this.speciality = speciality;
         this.activityCoach = activityCoach;
     }
-      public CoachModel(UUID coachId, String firstName, String lastName, String phone, String address, String speciality) {
+      public CoachModel(String coachId, String firstName, String lastName, String phone, String address, String speciality) {
         this.coachId = coachId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -102,11 +103,11 @@ public class CoachModel {
         this.speciality = speciality;
     }
 
-    public UUID getCoachId() {
+    public String getCoachId() {
         return coachId;
     }
 
-    public void setCoachId(UUID coachId) {
+    public void setCoachId(String coachId) {
         this.coachId = coachId;
     }
 }

@@ -9,6 +9,7 @@ import com.maisyst.fitness.utils.MaiResponse;
 import com.maisyst.fitness.models.CustomerModel;
 import com.maisyst.fitness.models.SubscribeModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,14 @@ public class CustomerServices implements ICustomerServices {
     private final ISubscribeServices subscribeServices;
     private final ISubscriptionServices subscriptionServices;
     private final IActivityServices activityServices;
-
-    public CustomerServices(ICustomerRepository customerRepository, ISubscribeServices subscribeServices, ISubscriptionServices subscriptionServices, IActivityServices activityServices) {
+    private final JdbcTemplate jdbcTemplate;
+    public CustomerServices(ICustomerRepository customerRepository, ISubscribeServices subscribeServices,
+                            ISubscriptionServices subscriptionServices, IActivityServices activityServices,JdbcTemplate jdbcTemplate) {
         this.customerRepository = customerRepository;
         this.subscribeServices = subscribeServices;
         this.subscriptionServices = subscriptionServices;
         this.activityServices = activityServices;
+        this.jdbcTemplate= jdbcTemplate;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription, UUID activity_id, CustomerModel model) {
+    public MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription, String activity_id, CustomerModel model) {
         try {
             var subscriptionResponse = subscriptionServices.findByType(typeSubscription);
             var activityModelMaiResponse = activityServices.findById(activity_id);
@@ -48,14 +51,14 @@ public class CustomerServices implements ICustomerServices {
                         model.getFirstName(),
                         model.getLastName(),
                         model.getYearOfBirth(),
-                        model.getAddress(),
-                        model.getUsername(),
-                        new BCryptPasswordEncoder().encode(model.getPassword())
-                ));
+                        model.getAddress())
+                );
                 var moment = getDateSubscription(stringToTypeSubscription(typeSubscription));
                 subscriptionResponse.getData().getActivities().add(activityModelMaiResponse.getData());
                 var subscribeRes = subscribeServices.insert(new SubscribeModel(moment[0], moment[1], true, customerResponse, subscriptionResponse.getData()));
                 if (subscribeRes.getStatus() == HttpStatus.OK) {
+                    System.out.println(activity_id+" su="+subscriptionResponse.getData().getSubscriptionId());
+                        jdbcTemplate.update("INSERT INTO concern VALUES(?,?)", activity_id, subscriptionResponse.getData().getSubscriptionId());
                     return new MaiResponse.MaiSuccess<>(customerResponse, HttpStatus.OK);
                 } else {
                     return new MaiResponse.MaiError<>(subscribeRes.getMessage(), HttpStatus.NOT_FOUND);
@@ -121,7 +124,7 @@ public class CustomerServices implements ICustomerServices {
 
 
     @Override
-    public MaiResponse<CustomerModel> update(UUID activityId, String subscriptionType, String customerId, CustomerModel model) {
+    public MaiResponse<CustomerModel> update(String activityId, String subscriptionType, String customerId, CustomerModel model) {
         try {
             var subscriptionResponse = subscriptionServices.findByType(subscriptionType);
             var activityModelMaiResponse = activityServices.findById(activityId);
@@ -136,8 +139,6 @@ public class CustomerServices implements ICustomerServices {
                     responseCustomer.get().setFirstName(model.getFirstName());
                     responseCustomer.get().setLastName(model.getLastName());
                     responseCustomer.get().setYearOfBirth(model.getYearOfBirth());
-                    responseCustomer.get().setUsername(model.getUsername());
-                    responseCustomer.get().setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
                     customerRepository.save(responseCustomer.get());
 
                     //var subscribeRes = subscribeServices.updateSubscribeCustomer(customerId,new SubscribeModel(su,moment[0], moment[1], responseCustomer.get().getIsActive(), responseCustomer.get(), subscriptionResponse.getData()));
@@ -158,15 +159,6 @@ public class CustomerServices implements ICustomerServices {
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @Override
-    public MaiResponse<CustomerModel> findByUsername(String username) {
-        var response = customerRepository.findByUsername(username);
-        if (response.isPresent()) {
-            return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
-        }
-        return new MaiResponse.MaiError<>("Customer don't exist", HttpStatus.NO_CONTENT);
     }
 
     @Override

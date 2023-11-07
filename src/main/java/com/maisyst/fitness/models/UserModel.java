@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.maisyst.fitness.utils.AuthRole;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,9 +18,9 @@ import java.util.UUID;
 @Entity(name = "login")
 public class UserModel implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @UuidGenerator
     @Column(name = "user_id")
-    UUID userId;
+    String userId;
     @Column(unique = true, nullable = false)
     String username;
     @Column(nullable = false)
@@ -38,7 +39,7 @@ public class UserModel implements UserDetails {
     public UserModel() {
     }
 
-    public UserModel(UUID userId, String username, String password, AuthRole role, boolean isActive) {
+    public UserModel(String userId, String username, String password, AuthRole role, boolean isActive) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -52,14 +53,6 @@ public class UserModel implements UserDetails {
         this.role = role;
         this.isActive = isActive;
     }
-
-    public UserModel(UUID userId, String username, AuthRole role, boolean isActive) {
-        this.userId = userId;
-        this.username = username;
-        this.role = role;
-        this.isActive = isActive;
-    }
-
     @Override
     public String getUsername() {
         return username;
@@ -99,11 +92,11 @@ public class UserModel implements UserDetails {
         return password;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

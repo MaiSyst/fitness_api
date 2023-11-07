@@ -23,13 +23,6 @@ public class CustomerModel {
     private Date yearOfBirth;
     @Column(nullable = false)
     private String address;
-    @Column(nullable = false,unique = true)
-    private String username;
-    @Column(nullable = false)
-    @JsonIgnore
-    private String password;
-     @Column(nullable = false)
-    private boolean isActive;
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private Set<SubscribeModel> subscribes = new HashSet<>();
@@ -38,47 +31,35 @@ public class CustomerModel {
 
     }
 
-    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password, Set<SubscribeModel> subscribes) {
+    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address, Set<SubscribeModel> subscribes) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
-        this.username=username;
-        this.password=password;
-        this.isActive=true;
     }
 
-    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address,String username,String password) {
+    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
-        this.username=username;
-        this.password=password;
-        this.isActive=true;
     }
 
-    public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String username,String password, Set<SubscribeModel> subscribes) {
+    public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address, Set<SubscribeModel> subscribes) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
-        this.username=username;
-        this.password=password;
-        this.isActive=true;
     }
-public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String username,String password) {
+public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
-        this.username=username;
-        this.password=password;
-        this.isActive=true;
     }
     public String getCustomerId() {
         return customerId;
@@ -123,27 +104,5 @@ public CustomerModel(String firstName, String lastName, Date yearOfBirth, String
 
     public void setSubscribes(Set<SubscribeModel> subscribes) {
         this.subscribes = subscribes;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public boolean getIsActive() {
-        return isActive;
-    }
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
     }
 }

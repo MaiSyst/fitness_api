@@ -117,7 +117,6 @@ public class SubscribeServices implements ISubscribeServices {
     @Override
     public MaiResponse<List<SubscribeModel>> findAllWithSubscriptionAndCustomer() {
         try {
-            System.out.println("SubServices");
             final String query = "SELECT * from subscribe,customer as c,subscription as sub WHERE subscribe.subscription_id=sub.subscription_id and subscribe.customer_id=c.customer_id";
             var response = jdbcTemplate.query(query,
                     (rs, rows) -> {
@@ -126,40 +125,14 @@ public class SubscribeServices implements ISubscribeServices {
                                 rs.getString("first_name"),
                                 rs.getString("last_name"),
                                 rs.getDate("year_of_birth"),
-                                rs.getString("address"),
-                                rs.getString("email"),
-                                rs.getString("password")
+                                rs.getString("address")
                         );
 
                         SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));
-                        List<ActivityModel> activities = jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id='" + rs.getString("subscription_id") + "'",
-                                (rs1, rows1) -> {
-                                    ActivityModel activityModel = new ActivityModel(UUID.fromString(rs1.getString("activity_id")), rs1.getString("label"), rs1.getString("description"));
-                                    var coach = jdbcTemplate.query("SELECT * FROM coach WHERE coach.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new CoachModel(
-                                            UUID.fromString(rs2.getString("coach_id")),
-                                            rs2.getString("first_name"),
-                                            rs2.getString("last_name"),
-                                            rs2.getString("phone"),
-                                            rs2.getString("address"),
-                                            rs2.getString("speciality")
-                                    ));
-                                    //int planningId, Date date, Time start_time, Time end_time, RoomModel room
-                                    var planning = jdbcTemplate.query("SELECT * FROM planning,room WHERE planning.room_id=room.room_id AND planning.activity_id='" + rs1.getInt("activity_id") + "'", (rs2, rows2) -> new PlanningModel(
-                                           UUID.fromString( rs2.getString("planning_id")),
-                                            stringToMaiDay(rs2.getString("day")),
-                                            rs2.getTime("start_time"),
-                                            rs2.getTime("end_time"),
-                                            new RoomModel(
-                                                    rs2.getString("room_id"),
-                                                    rs2.getString("room_name")
-                                            )
-                                    ));
-                                    activityModel.setCoach(coach);
-                                    activityModel.setPlannings(planning);
-                                    return activityModel;
-                                });
-
-                        subscriptionModel.setActivities(activities);
+                        List<ActivityModel> activities = jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id=?",
+                                (rs1, rows1) -> new ActivityModel(rs1.getString("activity_id"), rs1.getString("label"), rs1.getString("description")), rs.getString("subscription_id"));
+//
+            subscriptionModel.setActivities(activities);
                         return new SubscribeModel(
                                 rs.getString("subscribe_id"),
                                 rs.getDate("date_start"),

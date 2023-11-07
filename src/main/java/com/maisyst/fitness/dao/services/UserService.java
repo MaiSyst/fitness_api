@@ -131,21 +131,6 @@ public class UserService implements IUserService {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    @Override
-    public MaiResponse<AuthResponse> signInCustomer(AuthRequestCustomer authRequest) {
-        var responseUsername = customerServices.findByUsername(authRequest.username());
-        if (responseUsername.getStatus() == HttpStatus.OK) {
-            var model=responseUsername.getData();
-
-            return new MaiResponse.MaiSuccess<>(new AuthResponse(
-                    responseUsername.getData().getUsername(),
-                    maiJWTConfig.createToken(UUID.fromString(model.getCustomerId()), model.getUsername(), authRequest.role(), model.getIsActive(), 30),
-                    authRequest.role(),
-                    responseUsername.getData().getIsActive()
-            ), HttpStatus.OK);
-        }
-        return new MaiResponse.MaiError<>("User doesn't exist", HttpStatus.NOT_FOUND);
-    }
 
     @Override
     public MaiResponse<Map<String, Object>> checkToken(String token) {

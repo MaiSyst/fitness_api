@@ -80,23 +80,13 @@ public class RoomServices implements IRoomServices {
         try {
             String query = "SELECT * FROM room";
             var data = jdbcTemplate.query(query, (rs, rowNum) -> {
-                var countSubscribe = jdbcTemplate.query("SELECT activity_id FROM planning WHERE planning.room_id=?",
-                        (rs1, rowNum1) -> {
-                            System.out.println("Activity=" + rs1.getString("activity_id"));
-                            String query2 = "SELECT subscription_id from concern WHERE concern.activity_id=?";
-                            var subscriptions = jdbcTemplate.query(query2,
-                                    (rs2, rowNum2) -> {
-                                        String query3 = "SELECT count(*) from subscribe WHERE subscribe.subscription_id=?";
-                                        var count = jdbcTemplate.queryForObject(query3, Integer.class, UUID.nameUUIDFromBytes(rs2.getBytes("subscription_id")));
-                                        return count;
-                                    }, UUID.nameUUIDFromBytes(rs1.getBytes("activity_id")));
-                            return subscriptions.stream().reduce(0, Integer::sum);
-                        }, rs.getString("room_id"));
-                var sum = countSubscribe.stream().reduce(0, Integer::sum);
+                var activityIds = jdbcTemplate.queryForObject("SELECT count(room_id) as total FROM planning WHERE planning.room_id=?"
+                        ,Integer.class,
+                        rs.getString("room_id"));
                 return new RoomWithTotalSubscribeResponse(
                         rs.getString("room_id"),
                         rs.getString("room_name"),
-                        sum
+                        activityIds==null?0:activityIds
                 );
             });
             return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
@@ -113,12 +103,12 @@ public class RoomServices implements IRoomServices {
             var data = jdbcTemplate.query(query, (rs, rowNum) -> {
                 var planning = jdbcTemplate.query("SELECT * FROM planning,activity WHERE planning.activity_id =activity.activity_id AND planning.room_id='" + rs.getString("room_id") + "'",
                         (rs1, rowNum1) -> new PlanningModel(
-                                UUID.fromString(rs1.getString("planning_id")),
+                                rs1.getString("planning_id"),
                                 stringToMaiDay(rs1.getString("day")),
                                 rs1.getTime("start_time"),
                                 rs1.getTime("end_time"),
                                 new ActivityModel(
-                                        UUID.fromString(rs1.getString("activity_id")),
+                                        rs1.getString("activity_id"),
                                         rs1.getString("label"),
                                         rs1.getString("description")
                                 )

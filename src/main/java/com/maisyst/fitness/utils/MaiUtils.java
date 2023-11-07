@@ -64,10 +64,10 @@ public final class MaiUtils {
     }
 
     public static AuthRole stringToAuthRole(String role) {
-        if (role.toLowerCase().equals("user")) {
-            return AuthRole.USER;
+        if (role.toLowerCase().equals("admin")) {
+            return AuthRole.ADMIN;
         } else {
-            return AuthRole.CUSTOMER;
+              return AuthRole.USER;
         }
     }
 

@@ -20,7 +20,7 @@ public class CustomerController {
     }
 
     @PostMapping("/add/{subscriptionType}/{activityId}")
-    public ResponseEntity<String> add(@PathVariable String subscriptionType, @PathVariable UUID activityId, @RequestBody CustomerModel model){
+    public ResponseEntity<String> add(@PathVariable String subscriptionType, @PathVariable String activityId, @RequestBody CustomerModel model){
         var response=customerServices.insertWithSubscription(subscriptionType,activityId,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
@@ -30,7 +30,7 @@ public class CustomerController {
     }
     @PutMapping("/update/{subscriptionType}/{activityId}/{customId}")
     public ResponseEntity<String> update(@PathVariable String subscriptionType,@PathVariable String activityId,@PathVariable String customId,@RequestBody CustomerModel model){
-        var response=customerServices.update(UUID.fromString(activityId),subscriptionType,customId,model);
+        var response=customerServices.update(activityId,subscriptionType,customId,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
        }else{

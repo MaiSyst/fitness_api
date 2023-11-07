@@ -24,7 +24,7 @@ public class CoachController {
 
     @PostMapping("/add/{activity_id}")
     public ResponseEntity<String> add(@PathVariable String activity_id, @RequestBody CoachModel model) {
-        var activityResponse = activityServices.findById(UUID.fromString(activity_id));
+        var activityResponse = activityServices.findById(activity_id);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             model.setActivityCoach(activityResponse.getData());
             model.setSpeciality(activityResponse.getData().getLabel());
@@ -40,7 +40,7 @@ public class CoachController {
     }
 
     @PutMapping("/update/{activity_id}/{coach_id}")
-    public ResponseEntity<String> update(@PathVariable UUID activity_id,@PathVariable UUID coach_id, @RequestBody CoachModel model) {
+    public ResponseEntity<String> update(@PathVariable String activity_id,@PathVariable String coach_id, @RequestBody CoachModel model) {
 
         var activityResponse = activityServices.findById(activity_id);
         if (activityResponse.getStatus() == HttpStatus.OK) {
@@ -70,9 +70,7 @@ public class CoachController {
     }
     @PostMapping("/delete")
     public ResponseEntity<String> deleteById(@RequestBody DeleteManyRequest<String> coachIds) {
-        System.out.println(coachIds.ids());
-        var convertToUUID=coachIds.ids().stream().map(UUID::fromString).toList();
-        var response = coachServices.deleteMany(convertToUUID);
+        var response = coachServices.deleteMany(coachIds.ids());
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), HttpStatus.OK);
         } else {

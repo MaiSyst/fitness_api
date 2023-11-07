@@ -21,7 +21,7 @@ public class MaiJwtDecodeToUserModel {
      */
     public UserModel convertNow(DecodedJWT decodedJWT) {
         return new UserModel(
-                UUID.fromString(decodedJWT.getSubject()),
+                decodedJWT.getSubject(),
                 String.valueOf(decodedJWT.getClaim("username")),
                 stringToAuthRole(String.valueOf(decodedJWT.getClaim("role"))),
                 Boolean.getBoolean(String.valueOf(decodedJWT.getClaim("isAccountActivate")))

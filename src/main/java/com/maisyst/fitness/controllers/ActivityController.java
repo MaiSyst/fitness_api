@@ -57,7 +57,7 @@ public class ActivityController {
     }
 
     @PutMapping("/update/{activity_id}")
-    public ResponseEntity<String> update(@PathVariable UUID activity_id, @RequestBody ActivityModel model) {
+    public ResponseEntity<String> update(@PathVariable String activity_id, @RequestBody ActivityModel model) {
         var activityResponse = activityServices.update(activity_id, model);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             Executors.newSingleThreadExecutor().submit(() -> activityResponse.getData().getCoach().forEach(coachModel -> {
@@ -72,7 +72,7 @@ public class ActivityController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@RequestBody UUID activityId) {
+    public ResponseEntity<String> delete(@RequestBody String activityId) {
         var activityResponse = activityServices.deleteById(activityId);
         if (activityResponse.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(activityResponse.getData(), activityResponse.getStatus());
@@ -82,9 +82,7 @@ public class ActivityController {
     }
     @PostMapping("/deleteMany")
     public ResponseEntity<Object> delete(@RequestBody DeleteManyRequest<String> requestToDeleteMany) {
-        var activitiesUUID=new ArrayList<UUID>();
-        requestToDeleteMany.ids().forEach(act->activitiesUUID.add(UUID.fromString(act)));
-        var activityResponse = activityServices.deleteMany(activitiesUUID);
+        var activityResponse = activityServices.deleteMany(requestToDeleteMany.ids());
         if (activityResponse.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(activityResponse.getData(), activityResponse.getStatus());
         } else {

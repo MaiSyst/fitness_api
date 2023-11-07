@@ -4,6 +4,7 @@ import com.maisyst.fitness.utils.MaiDay;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -13,8 +14,8 @@ import java.util.UUID;
 public class PlanningModel {
     @Id
     @Column(name = "planning_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID planningId;
+    @UuidGenerator
+    private String planningId;
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private MaiDay day;
@@ -39,7 +40,7 @@ public class PlanningModel {
         this.activity = activity;
     }
 
-    public PlanningModel(UUID planningId, MaiDay day, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
+    public PlanningModel(String planningId, MaiDay day, Time startTime, Time endTime, RoomModel room, ActivityModel activity) {
         this.planningId = planningId;
         this.day = day;
         this.startTime = startTime;
@@ -48,14 +49,14 @@ public class PlanningModel {
         this.activity = activity;
     }
 
-    public PlanningModel(UUID planningId, MaiDay day, Time startTime, Time endTime, RoomModel room) {
+    public PlanningModel(String planningId, MaiDay day, Time startTime, Time endTime, RoomModel room) {
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
         this.room = room;
         this.planningId = planningId;
     }
-     public PlanningModel(UUID planningId, MaiDay day, Time startTime, Time endTime, ActivityModel activity) {
+     public PlanningModel(String planningId, MaiDay day, Time startTime, Time endTime, ActivityModel activity) {
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -63,11 +64,11 @@ public class PlanningModel {
         this.planningId = planningId;
     }
 
-    public UUID getPlanningId() {
+    public String getPlanningId() {
         return planningId;
     }
 
-    public void setPlanningId(UUID planningId) {
+    public void setPlanningId(String planningId) {
         this.planningId = planningId;
     }
 

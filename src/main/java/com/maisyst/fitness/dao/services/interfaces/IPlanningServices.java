@@ -9,14 +9,14 @@ import java.util.UUID;
 
 public interface IPlanningServices{
     MaiResponse<List<PlanningResponse>> fetchAll();
-    MaiResponse<PlanningModel> insert(UUID activity_id, String room_id, PlanningModel model);
-    MaiResponse<String> deleteById(UUID id);
-    MaiResponse<PlanningModel> findById(UUID id);
+    MaiResponse<PlanningModel> insert(String activity_id, String room_id, PlanningModel model);
+    MaiResponse<String> deleteById(String id);
+    MaiResponse<PlanningModel> findById(String id);
 
     MaiResponse<String> insertMany(List<PlanningModel> models);
 
-    MaiResponse<String> deleteMany(List<UUID> ids);
-    MaiResponse<PlanningModel> update(UUID activity_id,String room_id,UUID planningId, PlanningModel model);
+    MaiResponse<String> deleteMany(List<String> ids);
+    MaiResponse<PlanningModel> update(String activity_id,String room_id,String planningId, PlanningModel model);
     MaiResponse<List<PlanningModel>> findAllWithActivityAndRoom();
     MaiResponse<PlanningModel> findAllWithActivityAndRoomByPlanningId(String planningId);
     MaiResponse<List<PlanningResponse>> searchIt(String query);

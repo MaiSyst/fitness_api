@@ -14,7 +14,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
 
@@ -34,7 +33,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<PlanningModel> insert(UUID activity_id, String room_id, PlanningModel model) {
+    public MaiResponse<PlanningModel> insert(String activity_id, String room_id, PlanningModel model) {
         try {
             var activityResponse = activityServices.findById(activity_id);
             var roomResponse = roomServices.findById(room_id);
@@ -52,7 +51,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(UUID id) {
+    public MaiResponse<String> deleteById(String id) {
         try {
             planningRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Planning have been deleted", HttpStatus.OK);
@@ -62,7 +61,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<PlanningModel> findById(UUID id) {
+    public MaiResponse<PlanningModel> findById(String id) {
         try {
             var response = planningRepository.findById(id);
             if (response.isPresent()) {
@@ -81,8 +80,8 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<UUID> ids) {
-         try {
+    public MaiResponse<String> deleteMany(List<String> ids) {
+        try {
             planningRepository.deleteAllById(ids);
             return new MaiResponse.MaiSuccess<>("Planning have been deleted", HttpStatus.OK);
         } catch (Exception ex) {
@@ -91,7 +90,7 @@ public class PlanningServices implements IPlanningServices {
     }
 
     @Override
-    public MaiResponse<PlanningModel> update(UUID id, String room_id, UUID planningId, PlanningModel model) {
+    public MaiResponse<PlanningModel> update(String id, String room_id, String planningId, PlanningModel model) {
         try {
             var activityResponse = activityServices.findById(id);
             var roomResponse = roomServices.findById(room_id);
@@ -130,7 +129,7 @@ public class PlanningServices implements IPlanningServices {
         List<CoachModel> coachModels = jdbcTemplate.query(
                 "SELECT * FROM coach WHERE coach.activity_id=?",
                 (rsCoach, rowsCoach) -> new CoachModel(
-                        UUID.fromString(rsCoach.getString("coach_id")),
+                        rsCoach.getString("coach_id"),
                         rsCoach.getString("first_name"),
                         rsCoach.getString("last_name"),
                         rsCoach.getString("phone"),
@@ -150,7 +149,7 @@ public class PlanningServices implements IPlanningServices {
                 activityId
         );
         ActivityModel activityModel = new ActivityModel(
-                UUID.fromString(activityId),
+                activityId,
                 labelActivity,
                 descActivity,
                 coachModels,
@@ -160,7 +159,7 @@ public class PlanningServices implements IPlanningServices {
                 roomName
         );
         return new PlanningModel(
-                UUID.fromString(planningId),
+                planningId,
                 dayPlanning,
                 startTime,
                 endTime,
@@ -235,7 +234,7 @@ public class PlanningServices implements IPlanningServices {
             var response = planningRepository.searchIt(query);
             List<PlanningResponse> data = new ArrayList<>();
             response.forEach(re -> data.add(new PlanningResponse(re.getPlanningId(), re.getDay(),
-                    re.getStartTime(), re.getEndTime(),re.getActivity().getLabel(),re.getRoom().getRoomName())));
+                    re.getStartTime(), re.getEndTime(), re.getActivity().getLabel(), re.getRoom().getRoomName())));
             return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

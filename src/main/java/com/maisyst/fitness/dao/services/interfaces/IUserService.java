@@ -16,5 +16,4 @@ public interface IUserService {
     MaiResponse<String> delete(String username);
     MaiResponse<AuthResponse> signIn(AuthRequest authRequest);
     MaiResponse<Map<String,Object>>checkToken(String token);
-    MaiResponse<AuthResponse> signInCustomer(AuthRequestCustomer authRequest);
 }

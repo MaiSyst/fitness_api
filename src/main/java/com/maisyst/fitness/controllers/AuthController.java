@@ -38,17 +38,6 @@ public class AuthController {
             return new ResponseEntity<>(response.getMessage(), response.getStatus());
         }
     }
-
-    @PostMapping("/signInCustomer")
-    public ResponseEntity<Object> signIn(@RequestBody AuthRequestCustomer authRequest) {
-        var response = userService.signInCustomer(authRequest);
-        if (response.getStatus() == HttpStatus.OK) {
-            return new ResponseEntity<>(response.getData(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(response.getMessage(), response.getStatus());
-        }
-    }
-
     @PostMapping("/signOut")
     public ResponseEntity<Object> signOut(@RequestBody @Validated AuthRequest authRequest) {
         return new ResponseEntity<>("", HttpStatus.OK);

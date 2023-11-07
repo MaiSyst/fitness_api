@@ -53,7 +53,7 @@ public class ActivityServices implements IActivityServices {
     }
 
     @Override
-    public MaiResponse<String> deleteById(UUID id) {
+    public MaiResponse<String> deleteById(String id) {
         try {
             activityRepository.deleteById(id);
             return new MaiResponse.MaiSuccess<>("Activity deleted", HttpStatus.OK);
@@ -63,7 +63,7 @@ public class ActivityServices implements IActivityServices {
     }
 
     @Override
-    public MaiResponse<ActivityModel> update(UUID id, ActivityModel model) {
+    public MaiResponse<ActivityModel> update(String id, ActivityModel model) {
         try {
             var result = activityRepository.findById(id);
             if (result.isPresent()) {
@@ -80,7 +80,7 @@ public class ActivityServices implements IActivityServices {
     }
 
     @Override
-    public MaiResponse<ActivityModel> findById(UUID id) {
+    public MaiResponse<ActivityModel> findById(String id) {
         try {
             var response = activityRepository.findById(id);
             if (response.isPresent()) {
@@ -113,7 +113,7 @@ public class ActivityServices implements IActivityServices {
                 final String queryPlanning = "SELECT * from planning,room WHERE room.room_id=planning.room_id and planning.activity_id ="+rs.getInt("activity_id");
                 List<CoachModel> coachModel = jdbcTemplate.query(queryCoach, (rsCoach, rows1) ->
                         new CoachModel(
-                                UUID.fromString(rsCoach.getString("coach_id")),
+                                rsCoach.getString("coach_id"),
                                 rsCoach.getString("first_name"),
                                 rsCoach.getString("last_name"),
                                 rsCoach.getString("phone"),
@@ -130,13 +130,13 @@ public class ActivityServices implements IActivityServices {
                         )
                 );
                 List<PlanningModel> planningModel = jdbcTemplate.query(queryPlanning, (rsPlanning, rows1) -> new PlanningModel(
-                        UUID.fromString(rsPlanning.getString("planning_id")),
+                        rsPlanning.getString("planning_id"),
                         stringToMaiDay(rsPlanning.getString("day")),
                         rsPlanning.getTime("start_time"),
                         rsPlanning.getTime("end_time"),
                         new RoomModel(rsPlanning.getString("room_id"), rsPlanning.getString("room_name"))
                 ));
-                return new ActivityModel(UUID.fromString(rs.getString("activity_id")),
+                return new ActivityModel(rs.getString("activity_id"),
                         rs.getString("label"), rs.getString("description"),
                         coachModel, subscriptionModel, planningModel);
             });
@@ -157,7 +157,7 @@ public class ActivityServices implements IActivityServices {
     }
 
     @Override
-    public MaiResponse<String> deleteMany(List<UUID> ids) {
+    public MaiResponse<String> deleteMany(List<String> ids) {
         try {
             activityRepository.deleteAllById(ids);
             return new MaiResponse.MaiSuccess<>("Activities has been deleted", HttpStatus.OK);

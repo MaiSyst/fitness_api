@@ -24,7 +24,7 @@ public class PlanningController {
 
     @PostMapping("/add/{activity_id}/{room_id}")
     public ResponseEntity<String> add(@PathVariable String activity_id, @PathVariable String room_id, @RequestBody PlanningModel model) {
-        var response = planningServices.insert(UUID.fromString(activity_id), room_id, model);
+        var response = planningServices.insert(activity_id, room_id, model);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Planning was added with Success", HttpStatus.OK);
         } else {
@@ -33,7 +33,7 @@ public class PlanningController {
     }
     @PutMapping("/update/{activityId}/{roomId}/{planningId}")
     public ResponseEntity<String> update(@PathVariable String activityId, @PathVariable String roomId,@PathVariable String planningId, @RequestBody PlanningModel model) {
-        var response = planningServices.update(UUID.fromString(activityId), roomId,UUID.fromString(planningId), model);
+        var response = planningServices.update(activityId, roomId,planningId, model);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Planning was updated with Success", HttpStatus.OK);
         } else {
@@ -52,8 +52,8 @@ public class PlanningController {
     }
 
     @GetMapping("/fetchAll")
-    public ResponseEntity<List<PlanningResponse>> fetchAll() {
-        var response = planningServices.fetchAll();
+    public ResponseEntity<List<PlanningModel>> fetchAll() {
+        var response = planningServices.findAllWithActivityAndRoom();
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), response.getStatus());
         } else {
@@ -63,7 +63,7 @@ public class PlanningController {
 
     @DeleteMapping("/delete/{planningId}")
     public ResponseEntity<String> deletePlanning(@PathVariable String planningId) {
-        var response = planningServices.deleteById(UUID.fromString(planningId));
+        var response = planningServices.deleteById(planningId);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Planning deleted", response.getStatus());
         } else {
@@ -72,9 +72,7 @@ public class PlanningController {
     }
     @PostMapping("/delete")
     public ResponseEntity<String> deleteManyPlanning(@RequestBody DeleteManyRequest<String>planningsId) {
-        System.out.println(planningsId.ids());
-        var convertToUUID=planningsId.ids().stream().map(UUID::fromString).toList();
-        var response = planningServices.deleteMany(convertToUUID);
+        var response = planningServices.deleteMany(planningsId.ids());
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Planning deleted", response.getStatus());
         } else {

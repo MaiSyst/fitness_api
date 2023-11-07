@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface IPlanningRepository extends JpaRepository<PlanningModel, UUID> {
+public interface IPlanningRepository extends JpaRepository<PlanningModel, String> {
     @Query(value = "select * from planning where day like concat('%',?1,'%')",nativeQuery = true)
     List<PlanningModel> searchIt(String query);
 }

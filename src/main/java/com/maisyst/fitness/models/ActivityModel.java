@@ -2,6 +2,7 @@ package com.maisyst.fitness.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.UUID;
 public class ActivityModel {
     @Id
     @Column(name = "activity_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID activityId;
+    @UuidGenerator
+    private String activityId;
     @Column(nullable = false, unique = true)
     private String label;
     @Column(nullable = false)
@@ -41,7 +42,7 @@ public class ActivityModel {
     }
 
 
-    public ActivityModel(UUID activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions, List<PlanningModel> plannings) {
+    public ActivityModel(String activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions, List<PlanningModel> plannings) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
@@ -58,7 +59,7 @@ public class ActivityModel {
         this.plannings = plannings;
     }
 
-    public ActivityModel(UUID activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions) {
+    public ActivityModel(String activityId, String label, String description, List<CoachModel> coach, List<SubscriptionModel> subscriptions) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
@@ -66,7 +67,7 @@ public class ActivityModel {
         this.subscriptions = subscriptions;
     }
 
-    public ActivityModel(UUID activityId, String label, String description) {
+    public ActivityModel(String activityId, String label, String description) {
         this.activityId = activityId;
         this.label = label;
         this.description = description;
@@ -76,7 +77,7 @@ public class ActivityModel {
         this.description = description;
     }
 
-    public UUID getActivityId() {
+    public String getActivityId() {
         return activityId;
     }
 
@@ -104,7 +105,7 @@ public class ActivityModel {
         this.coach = coach;
     }
 
-    public void setActivityId(UUID activityId) {
+    public void setActivityId(String activityId) {
         this.activityId = activityId;
     }
 

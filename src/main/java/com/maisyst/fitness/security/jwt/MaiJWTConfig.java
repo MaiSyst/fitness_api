@@ -30,9 +30,9 @@ public class MaiJWTConfig {
      * @param isAccountActive is the status of the user account
      * @return token created with information user
      */
-    public String createToken(UUID user_id, String username, AuthRole role, boolean isAccountActive, int validTokenInDays){
+    public String createToken(String user_id, String username, AuthRole role, boolean isAccountActive, int validTokenInDays){
         return JWT.create()
-                .withSubject(String.valueOf(user_id))
+                .withSubject(user_id)
                 .withExpiresAt(Instant.now().plus(Duration.of(validTokenInDays, ChronoUnit.DAYS)))
                 .withClaim("username",username)
                 .withClaim("role",role.name())

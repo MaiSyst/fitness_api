@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.UUID;
 
-public non-sealed interface IActivityServices extends IServices<ActivityModel, UUID> {
+public non-sealed interface IActivityServices extends IServices<ActivityModel, String> {
     MaiResponse<ActivityModel> insertWithSubscription(String type, ActivityModel model);
 
     MaiResponse<List<ActivityModel>> fetchAllWithCoachSubsPlanning();
