@@ -24,8 +24,6 @@ public class MaiJwtDecoder {
                 .build();
             decodedJWT=jwtVerifier.verify(token);
         }catch (JWTVerificationException ex){
-            System.out.println("JWTVerificationException");
-            System.out.println(token);
             System.out.println(ex.getMessage());
         }
         return decodedJWT;

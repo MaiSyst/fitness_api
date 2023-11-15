@@ -7,9 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -19,9 +17,10 @@ public class CustomerController {
         this.customerServices=customerServices;
     }
 
-    @PostMapping("/add/{subscriptionType}/{activityId}")
-    public ResponseEntity<String> add(@PathVariable String subscriptionType, @PathVariable String activityId, @RequestBody CustomerModel model){
-        var response=customerServices.insertWithSubscription(subscriptionType,activityId,model);
+    @PostMapping("/add/{subscriptionType}/{activityId}/{roomId}")
+    public ResponseEntity<String> add(@PathVariable String subscriptionType, @PathVariable String activityId,@PathVariable String roomId, @RequestBody CustomerModel model){
+        System.out.println(CustomerController.class.getName()+" ROOMID="+roomId);
+        var response=customerServices.insertWithSubscription(subscriptionType,activityId,roomId,model);
        if(response.getStatus()==HttpStatus.OK) {
            return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
        }else{
@@ -49,6 +48,24 @@ public class CustomerController {
     @GetMapping("/fetchAll")
     public ResponseEntity<List<CustomerModel>> fetchAll(){
         var response=customerServices.fetchAll();
+        if(response.getStatus()== HttpStatus.OK){
+            return new ResponseEntity<>(response.getData(),response.getStatus());
+        }else{
+            return new ResponseEntity<>(null,response.getStatus());
+        }
+    }
+    @GetMapping("/fetchAllByRoom/{roomId}")
+    public ResponseEntity<List<CustomerModel>> fetchAllByRoom(@PathVariable String roomId){
+        var response=customerServices.fetchAllByRoom(roomId);
+        if(response.getStatus()== HttpStatus.OK){
+            return new ResponseEntity<>(response.getData(),response.getStatus());
+        }else{
+            return new ResponseEntity<>(null,response.getStatus());
+        }
+    }
+    @GetMapping("/checkCustomer/{identityEmf}")
+    public ResponseEntity<CustomerModel> checkCustomer(@PathVariable String identityEmf){
+        var response=customerServices.findByIdentityEMF(identityEmf);
         if(response.getStatus()== HttpStatus.OK){
             return new ResponseEntity<>(response.getData(),response.getStatus());
         }else{

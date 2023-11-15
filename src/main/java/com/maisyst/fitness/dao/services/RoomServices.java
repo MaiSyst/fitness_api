@@ -2,19 +2,14 @@ package com.maisyst.fitness.dao.services;
 
 import com.maisyst.fitness.dao.services.interfaces.IRoomServices;
 import com.maisyst.fitness.dao.repositories.IRoomRepository;
-import com.maisyst.fitness.models.ActivityModel;
-import com.maisyst.fitness.models.PlanningModel;
-import com.maisyst.fitness.models.RoomWithTotalSubscribeResponse;
+import com.maisyst.fitness.models.*;
+import com.maisyst.fitness.utils.AuthRole;
 import com.maisyst.fitness.utils.MaiResponse;
-import com.maisyst.fitness.models.RoomModel;
-import com.maisyst.fitness.utils.MaiUID;
-import org.hibernate.internal.util.BytesHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
 
@@ -81,17 +76,16 @@ public class RoomServices implements IRoomServices {
             String query = "SELECT * FROM room";
             var data = jdbcTemplate.query(query, (rs, rowNum) -> {
                 var activityIds = jdbcTemplate.queryForObject("SELECT count(room_id) as total FROM planning WHERE planning.room_id=?"
-                        ,Integer.class,
+                        , Integer.class,
                         rs.getString("room_id"));
                 return new RoomWithTotalSubscribeResponse(
                         rs.getString("room_id"),
                         rs.getString("room_name"),
-                        activityIds==null?0:activityIds
+                        activityIds == null ? 0 : activityIds
                 );
             });
             return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
         } catch (Exception ex) {
-            System.out.println("Error=" + ex.getMessage());
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -101,6 +95,7 @@ public class RoomServices implements IRoomServices {
         try {
             String query = "SELECT * FROM room";
             var data = jdbcTemplate.query(query, (rs, rowNum) -> {
+                var roomId= rs.getString("room_id");
                 var planning = jdbcTemplate.query("SELECT * FROM planning,activity WHERE planning.activity_id =activity.activity_id AND planning.room_id='" + rs.getString("room_id") + "'",
                         (rs1, rowNum1) -> new PlanningModel(
                                 rs1.getString("planning_id"),
@@ -113,13 +108,50 @@ public class RoomServices implements IRoomServices {
                                         rs1.getString("description")
                                 )
                         ));
+                var customers = jdbcTemplate.query("SELECT  * FROM customer WHERE customer.room_id=?", (rs2, rowNum2) -> new CustomerModel(
+                        rs2.getString("customer_id"),
+                        rs2.getString("first_name"),
+                        rs2.getString("last_name"),
+                        rs2.getDate("year_of_birth"),
+                        rs2.getString("address"),
+                        rs2.getString("identity_emf")
+                ), roomId);
+                var managerQuery = jdbcTemplate.query("SELECT  user_id,address,date,first_name,last_name,is_active,username,phone_number FROM login WHERE login.room_id=?",
+                        (rs2, rowNum2) -> new UserModel(
+                                    rs2.getString("user_id"),
+                                    rs2.getString("username"),
+                                    rs2.getString("first_name"),
+                                    rs2.getString("last_name"),
+                                    rs2.getDate("date"),
+                                    rs2.getString("address"),
+                                    rs2.getString("phone_number"),
+                                    null,
+                                    "",
+                                    rs2.getBoolean("is_active"),
+                                    AuthRole.USER
+                            ),roomId);
+                var manager=managerQuery.isEmpty()?null:managerQuery.get(0);
                 return new RoomModel(
                         rs.getString("room_id"),
                         rs.getString("room_name"),
+                        manager,
+                        customers,
                         planning
                 );
             });
             return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    public MaiResponse<List<RoomNoManager>> findAllRoomNoManager() {
+        try {
+            var response = jdbcTemplate.query("SELECT * FROM room WHERE room.manager_id is null",
+                    (rs, rowNum) -> new RoomNoManager(rs.getString("room_id"), rs.getString("room_name")));
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

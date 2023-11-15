@@ -3,10 +3,8 @@ package com.maisyst.fitness.dao.services;
 import com.maisyst.fitness.dao.services.interfaces.ISubscriptionServices;
 import com.maisyst.fitness.dao.repositories.ISubscriptionRepository;
 import com.maisyst.fitness.utils.MaiResponse;
-import com.maisyst.fitness.utils.MaiUID;
 import com.maisyst.fitness.models.SubscriptionModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +15,8 @@ import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 @Service
 public class SubscriptionServices implements ISubscriptionServices {
     private final ISubscriptionRepository subscriptionRepository;
-    private final JdbcTemplate jdbcTemplate;
-    public SubscriptionServices(ISubscriptionRepository subscriptionRepository, JdbcTemplate jdbcTemplate){
+    public SubscriptionServices(ISubscriptionRepository subscriptionRepository){
         this.subscriptionRepository=subscriptionRepository;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

@@ -125,7 +125,8 @@ public class SubscribeServices implements ISubscribeServices {
                                 rs.getString("first_name"),
                                 rs.getString("last_name"),
                                 rs.getDate("year_of_birth"),
-                                rs.getString("address")
+                                rs.getString("address"),
+                                rs.getString("identity_emf")
                         );
 
                         SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));

@@ -3,6 +3,8 @@ package com.maisyst.fitness.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.maisyst.fitness.utils.AuthRole;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -24,6 +26,20 @@ public class UserModel implements UserDetails {
     @Column(unique = true, nullable = false)
     String username;
     @Column(nullable = false)
+    String firstName;
+    @Column(nullable = false)
+    String lastName;
+    @Column
+    Date date;
+    @Column
+    String address;
+    @Column
+    String phoneNumber;
+    @OneToOne
+    @JoinColumn(name = "room_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    RoomModel room;
+    @Column(nullable = false)
     @JsonIgnore
     String password;
     @Column(name = "is_active")
@@ -36,6 +52,7 @@ public class UserModel implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     Date updatedAt;
+
     public UserModel() {
     }
 
@@ -47,12 +64,44 @@ public class UserModel implements UserDetails {
         this.isActive = isActive;
     }
 
+    public UserModel(String username, String firstName, String lastName, Date date, String address,
+                     String phoneNumber, RoomModel room, String password, boolean isActive, AuthRole role) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.date = date;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.room = room;
+        this.password = password;
+        this.isActive = isActive;
+        this.role = role;
+    }
+
+    public UserModel(String userId, String username, String firstName, String lastName,
+                     Date date, String address,
+                     String phoneNumber, RoomModel room, String password,
+                     boolean isActive, AuthRole role) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.date = date;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.room = room;
+        this.password = password;
+        this.isActive = isActive;
+        this.role = role;
+        this.userId = userId;
+    }
+
     public UserModel(String username, String password, AuthRole role, boolean isActive) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.isActive = isActive;
     }
+
     @Override
     public String getUsername() {
         return username;
@@ -85,6 +134,62 @@ public class UserModel implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public RoomModel getRoom() {
+        return room;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setRoom(RoomModel room) {
+        this.room = room;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     @Override

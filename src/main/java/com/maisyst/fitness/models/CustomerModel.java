@@ -15,6 +15,8 @@ public class CustomerModel {
     @Column(name = "customer_id")
     @UuidGenerator
     private String customerId;
+    @Column(name = "identity_emf",unique = true)
+    private String identityEMF;
     @Column(name = "first_name",nullable = false)
     private String firstName;
     @Column(name = "last_name",nullable = false)
@@ -26,40 +28,61 @@ public class CustomerModel {
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private Set<SubscribeModel> subscribes = new HashSet<>();
-
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    RoomModel room;
     public CustomerModel() {
 
     }
 
-    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address, Set<SubscribeModel> subscribes) {
+    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address,String identityEMF,RoomModel room, Set<SubscribeModel> subscribes) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
+        this.identityEMF=identityEMF;
+        this.room=room;
     }
 
-    public CustomerModel(String customerId, String firstName, String lastName, Date yearOfBirth, String address) {
+    public CustomerModel(String customerId, String firstName,
+                         String lastName,
+                         Date yearOfBirth, String address,
+                         String identityEMF,RoomModel room) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
+        this.identityEMF=identityEMF;
+        this.room=room;
     }
 
-    public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address, Set<SubscribeModel> subscribes) {
+    public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String identityEMF,RoomModel room, Set<SubscribeModel> subscribes) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
         this.subscribes = subscribes;
+        this.identityEMF=identityEMF;
+        this.room=room;
     }
-public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address) {
+public CustomerModel(String firstName, String lastName, Date yearOfBirth, String address,String identityEMF,RoomModel room) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.yearOfBirth = yearOfBirth;
         this.address = address;
+        this.identityEMF=identityEMF;
+        this.room=room;
+    }
+    public CustomerModel(String customerId,String firstName, String lastName, Date yearOfBirth, String address,String identityEMF) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.yearOfBirth = yearOfBirth;
+        this.address = address;
+        this.identityEMF=identityEMF;
+        this.customerId=customerId;
     }
     public String getCustomerId() {
         return customerId;
@@ -100,6 +123,14 @@ public CustomerModel(String firstName, String lastName, Date yearOfBirth, String
 
     public Set<SubscribeModel> getSubscribes() {
         return subscribes;
+    }
+
+    public void setIdentityEMF(String identityEMF) {
+        this.identityEMF = identityEMF;
+    }
+
+    public String getIdentityEMF() {
+        return identityEMF;
     }
 
     public void setSubscribes(Set<SubscribeModel> subscribes) {

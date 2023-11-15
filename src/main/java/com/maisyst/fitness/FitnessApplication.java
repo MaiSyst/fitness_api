@@ -31,9 +31,19 @@ public class FitnessApplication {
             );
             subscriptionRepository.saveAll(models);
         }
-        var result = repository.findByUsername("infinity@Admin90");
+        var result = repository.findByUsername("emf@Admin90");
         if (result.isEmpty()) {
-            repository.save(new UserModel("infinity@Admin90", "$2a$10$ShZnV8OdBzUpzSZGqqw3dOsbGM4VLS8qPwvf725S1nVoAXnf62ijq", AuthRole.ADMIN, true));
+            repository.save(new UserModel(
+                    "emf@Admin90",
+                    "admin",
+                    "admin",
+                    null,
+                    null,
+                    null,
+                    null,
+                    "$2a$10$ShZnV8OdBzUpzSZGqqw3dOsbGM4VLS8qPwvf725S1nVoAXnf62ijq",
+                    true,
+                    AuthRole.ADMIN));
         }
     }
 

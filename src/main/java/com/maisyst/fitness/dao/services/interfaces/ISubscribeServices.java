@@ -6,7 +6,6 @@ import com.maisyst.fitness.models.SubscribeModel;
 import com.maisyst.fitness.models.SubscriptionModel;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ISubscribeServices{
     MaiResponse<SubscribeModel> insert(SubscribeModel model);
