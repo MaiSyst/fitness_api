@@ -80,6 +80,7 @@ public class UserService implements IUserService {
     @Override
     public MaiResponse<UserModel> updatePassword(String username, String newPassword) {
         try {
+            System.out.println("UPDATE_USER="+username+" UPDATE_PWD="+newPassword);
             var response = repository.findByUsernameAndIsActive(username,true);
             if (response.isPresent()) {
                 response.get().setPassword(new BCryptPasswordEncoder().encode(newPassword));

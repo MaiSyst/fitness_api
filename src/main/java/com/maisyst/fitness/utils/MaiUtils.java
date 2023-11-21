@@ -1,8 +1,11 @@
 package com.maisyst.fitness.utils;
 
-import com.maisyst.MaiDateCompare;
+import com.maisyst.date.MaiDate;
+import com.maisyst.date.MaiDateInfoType;
+import com.maisyst.fitness.models.SubscribeModel;
 
 import java.sql.Date;
+import java.util.List;
 
 public final class MaiUtils {
     public static TypeSubscription stringToTypeSubscription(String type) {
@@ -12,6 +15,7 @@ public final class MaiUtils {
             default -> TypeSubscription.STANDARD;
         };
     }
+
     public static MaiDay stringToMaiDay(String type) {
         return switch (type.toLowerCase()) {
             case "monday" -> MaiDay.MONDAY;
@@ -20,38 +24,40 @@ public final class MaiUtils {
             case "thursday" -> MaiDay.THURSDAY;
             case "friday" -> MaiDay.FRIDAY;
             case "saturday" -> MaiDay.SATURDAY;
-            default  -> MaiDay.SUNDAY;
+            default -> MaiDay.SUNDAY;
         };
     }
-     public static String maiDayToString(MaiDay type) {
+
+    public static String maiDayToString(MaiDay type) {
         return switch (type) {
             case MONDAY -> "MONDAY";
             case TUESDAY -> "TUESDAY";
             case WEDNESDAY -> "WEDNESDAY";
-            case THURSDAY ->"THURSDAY";
+            case THURSDAY -> "THURSDAY";
             case FRIDAY -> "FRIDAY";
             case SATURDAY -> "SATURDAY";
-            default  -> "SUNDAY";
+            default -> "SUNDAY";
         };
     }
+
     public static String maiDayToFrench(String type) {
-       return switch (type.toLowerCase()) {
+        return switch (type.toLowerCase()) {
             case "monday" -> "Lundi";
             case "tuesday" -> "Mardi";
             case "wednesday" -> "Mercredi";
             case "thursday" -> "Jeudi";
             case "friday" -> "Vendredi";
             case "saturday" -> "Samedi";
-            default  -> "Dimanche";
+            default -> "Dimanche";
         };
     }
 
     public static Date[] getDateSubscription(TypeSubscription type) {
         var date = new java.util.Date();
         return switch (type) {
-            case GOLD -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addYears(date, 1))};
-            case PRIME -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addMonths(date, 6))};
-            default -> new Date[]{getDateSql(date), getDateSql(MaiDateCompare.addMonths(date, 1))};
+            case GOLD -> new Date[]{getDateSql(date), getDateSql(MaiDate.addYears(date, 1))};
+            case PRIME -> new Date[]{getDateSql(date), getDateSql(MaiDate.addMonths(date, 6))};
+            default -> new Date[]{getDateSql(date), getDateSql(MaiDate.addMonths(date, 1))};
         };
     }
 
@@ -64,11 +70,22 @@ public final class MaiUtils {
     }
 
     public static AuthRole stringToAuthRole(String role) {
-        if (role.toLowerCase().equals("admin")) {
+        if (role.equalsIgnoreCase("admin")) {
             return AuthRole.ADMIN;
         } else {
-              return AuthRole.USER;
+            return AuthRole.USER;
         }
+    }
+
+    public static List<SubscribeModel> checkValidateAllSubscribe(List<SubscribeModel> subscribeModels) {
+        subscribeModels.forEach(subscribeModel -> {
+            var response = MaiDate.compareBetween(subscribeModel.getDateEnd());
+            if (response.getInfoDays() == MaiDateInfoType.EXPIRED ||
+                    response.getInfoDays() == MaiDateInfoType.PASSED) {
+                subscribeModel.setIsActive(false);
+            }
+        });
+        return subscribeModels;
     }
 
     public static Date getDateSql(java.util.Date date) {

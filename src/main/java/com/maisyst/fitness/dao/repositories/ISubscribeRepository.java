@@ -1,5 +1,6 @@
 package com.maisyst.fitness.dao.repositories;
 
+import com.maisyst.fitness.models.CustomerModel;
 import com.maisyst.fitness.models.SubscribeModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,4 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ISubscribeRepository extends JpaRepository<SubscribeModel, String> { }
+public interface ISubscribeRepository extends JpaRepository<SubscribeModel, String> {
+    List<SubscribeModel>findAllByCustomer(CustomerModel customer);
+}

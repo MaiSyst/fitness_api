@@ -147,5 +147,14 @@ public class SubscribeServices implements ISubscribeServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
     }
+@Override
+    public MaiResponse<List<SubscribeModel>>findAllByCustomer(CustomerModel customer){
+        try {
+            var response=subscribeRepository.findAllByCustomer(customer);
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
+        }catch(Exception ex){
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
+        }
+    }
 
 }

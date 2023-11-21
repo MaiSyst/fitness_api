@@ -1,11 +1,13 @@
 package com.maisyst.fitness;
 
+import com.maisyst.fitness.dao.repositories.ISubscribeRepository;
 import com.maisyst.fitness.dao.repositories.ISubscriptionRepository;
 import com.maisyst.fitness.dao.repositories.IUserRepository;
 import com.maisyst.fitness.utils.AuthRole;
 import com.maisyst.fitness.models.SubscriptionModel;
 import com.maisyst.fitness.models.UserModel;
 import com.maisyst.fitness.utils.MaiUID;
+import com.maisyst.fitness.utils.MaiUtils;
 import com.maisyst.fitness.utils.TypeSubscription;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +24,8 @@ public class FitnessApplication {
         var configurableApplicationContext = SpringApplication.run(FitnessApplication.class, args);
         IUserRepository repository = configurableApplicationContext.getBean(IUserRepository.class);
         ISubscriptionRepository subscriptionRepository = configurableApplicationContext.getBean(ISubscriptionRepository.class);
+        ISubscribeRepository subscribeRepository = configurableApplicationContext.getBean(ISubscribeRepository.class);
+
         var subscription = subscriptionRepository.findAll();
         if (subscription.isEmpty()) {
             List<SubscriptionModel> models = List.of(
@@ -32,6 +36,7 @@ public class FitnessApplication {
             subscriptionRepository.saveAll(models);
         }
         var result = repository.findByUsername("emf@Admin90");
+        subscribeRepository.saveAll(MaiUtils.checkValidateAllSubscribe(subscribeRepository.findAll()));
         if (result.isEmpty()) {
             repository.save(new UserModel(
                     "emf@Admin90",

@@ -69,7 +69,15 @@ public class AuthController {
         }
 
     }
-
+    @PostMapping("/updatePassword/{identityEMF}")
+    public ResponseEntity<String> updatePassword(@RequestBody RequestSingle<String> request,@PathVariable String identityEMF) {
+        var userModel=userService.updatePassword(identityEMF,request.arg());
+        if (userModel.getStatus()==HttpStatus.OK){
+            return new ResponseEntity<>("Password updated", userModel.getStatus());
+        }else{
+             return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
+        }
+    }
     @PostMapping("/disableOrEnableAccount/{username}")
     public ResponseEntity<String> disableOrEnableAccount(@PathVariable String username, @RequestBody AuthRequestDisableOrEnable auth) {
         System.out.println("AUTH="+auth.isActive());

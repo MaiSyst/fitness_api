@@ -21,5 +21,6 @@ public interface ISubscribeServices{
 
     MaiResponse<String> deleteMany(List<String> ids);
     MaiResponse<SubscribeModel> update(String id, SubscribeModel model);
+    MaiResponse<List<SubscribeModel>>findAllByCustomer(CustomerModel customer);
 
 }

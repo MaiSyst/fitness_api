@@ -20,7 +20,7 @@ public class SubscribeModel {
     @Column(name = "date_end")
     private Date dateEnd;
     @Column(nullable = false)
-    private boolean isActive=false;
+    private boolean isActive;
     @ManyToOne
     @JoinColumn(name = "customer_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
