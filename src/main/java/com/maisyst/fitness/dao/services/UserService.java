@@ -195,12 +195,13 @@ public class UserService implements IUserService {
 
     public MaiResponse<UserModel> update(String userId, UserModel model) {
         try {
-            var response = repository.findById(userId);
+            var response = repository.findByUsername(userId);
             if (response.isPresent()) {
                 response.get().setFirstName(model.getFirstName());
                 response.get().setLastName(model.getLastName());
                 response.get().setDate(model.getDate());
                 response.get().setAddress(model.getAddress());
+                response.get().setUsername(model.getFirstName()+"@"+response.get().getUsername().split("@")[1]);
                 if (!model.getPassword().isBlank() && model.getPassword() == null) {
                     response.get().setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
                 }

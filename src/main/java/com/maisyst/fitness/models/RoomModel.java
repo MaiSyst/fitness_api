@@ -16,7 +16,7 @@ public class RoomModel {
     @Column(name = "room_name", nullable = false, unique = true)
     private String roomName;
     @OneToMany(mappedBy = "room")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<PlanningModel> plannings = new ArrayList<>();
     @OneToMany(mappedBy = "room")
     @OnDelete(action = OnDeleteAction.CASCADE)

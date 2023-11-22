@@ -64,8 +64,9 @@ public class UserModel implements UserDetails {
         this.isActive = isActive;
     }
 
-    public UserModel(String username, String firstName, String lastName, Date date, String address,
-                     String phoneNumber, RoomModel room, String password, boolean isActive, AuthRole role) {
+    public UserModel(
+            String username, String firstName, String lastName, Date date, String address,
+            String phoneNumber, RoomModel room, String password, boolean isActive, AuthRole role) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -78,9 +79,10 @@ public class UserModel implements UserDetails {
         this.role = role;
     }
 
-    public UserModel(String userId, String username, String firstName, String lastName,
-                     Date date, String address,
-                     String phoneNumber, RoomModel room, String password,
+    public UserModel(
+            String userId, String username, String firstName, String lastName,
+            Date date, String address,
+            String phoneNumber, RoomModel room, String password,
                      boolean isActive, AuthRole role) {
         this.username = username;
         this.firstName = firstName;

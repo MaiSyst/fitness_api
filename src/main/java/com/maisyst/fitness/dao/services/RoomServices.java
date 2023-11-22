@@ -108,7 +108,8 @@ public class RoomServices implements IRoomServices {
                                         rs1.getString("description")
                                 )
                         ));
-                var customers = jdbcTemplate.query("SELECT  * FROM customer WHERE customer.room_id=?", (rs2, rowNum2) -> new CustomerModel(
+                var customers = jdbcTemplate.query("SELECT  * FROM customer WHERE customer.room_id=?",
+                        (rs2, rowNum2) -> new CustomerModel(
                         rs2.getString("customer_id"),
                         rs2.getString("first_name"),
                         rs2.getString("last_name"),

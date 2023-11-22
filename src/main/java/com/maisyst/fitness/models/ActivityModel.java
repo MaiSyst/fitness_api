@@ -2,6 +2,8 @@ package com.maisyst.fitness.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class ActivityModel {
     private List<SubscriptionModel> subscriptions=new ArrayList<>();
     @OneToMany(mappedBy = "activity")
     @JsonIgnore
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private List<PlanningModel> plannings=new ArrayList<>();
 
     public ActivityModel() {

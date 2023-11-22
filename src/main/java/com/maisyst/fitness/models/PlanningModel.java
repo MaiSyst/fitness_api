@@ -23,11 +23,13 @@ public class PlanningModel {
     private Time startTime;
     @Column(nullable = false,name = "end_time")
     private Time endTime;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "room_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private RoomModel room;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "activity_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ActivityModel activity;
     public PlanningModel() {
     }

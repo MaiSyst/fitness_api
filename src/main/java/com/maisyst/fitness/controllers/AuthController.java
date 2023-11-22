@@ -78,6 +78,23 @@ public class AuthController {
              return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
         }
     }
+    @PutMapping("/update/{identityEMF}")
+    public ResponseEntity<String> update(@RequestBody AuthRequestCreated model,@PathVariable String identityEMF) {
+        UserModel users=new UserModel();
+        users.setFirstName(model.firstName());
+        users.setLastName(model.lastName());
+        users.setAddress(model.address());
+        users.setPhoneNumber(model.phoneNumber());
+        users.setDate(model.date());
+        users.setPassword(model.password());
+
+        var userModel=userService.update(identityEMF,users);
+        if (userModel.getStatus()==HttpStatus.OK){
+            return new ResponseEntity<>("User updated", userModel.getStatus());
+        }else{
+             return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
+        }
+    }
     @PostMapping("/disableOrEnableAccount/{username}")
     public ResponseEntity<String> disableOrEnableAccount(@PathVariable String username, @RequestBody AuthRequestDisableOrEnable auth) {
         System.out.println("AUTH="+auth.isActive());
