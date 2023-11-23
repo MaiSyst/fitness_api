@@ -31,8 +31,8 @@ public class CustomerController {
         }
     }
 
-    @PutMapping("/update/{roomId}/{customId}")
-    public ResponseEntity<String> update(@PathVariable String customId, @PathVariable String roomId, @RequestBody CustomerModel model) {
+    @PutMapping("/update/{subscriptionId}/{roomId}/{customId}")
+    public ResponseEntity<String> update(@PathVariable String subscriptionId,@PathVariable String customId, @PathVariable String roomId, @RequestBody CustomerModel model) {
         if (roomId.equals("user")) {
             var response = customerServices.update(customId, model);
             if (response.getStatus() == HttpStatus.OK) {
@@ -42,7 +42,7 @@ public class CustomerController {
             }
 
         }
-        var response = customerServices.update(customId, roomId, model);
+        var response = customerServices.update(customId,subscriptionId, roomId, model);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Customer was added with Success", HttpStatus.OK);
         } else {

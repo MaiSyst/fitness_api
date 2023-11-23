@@ -45,7 +45,6 @@ public class CoachController {
             var data = activityResponse.getData();
             model.setActivityCoach(data);
             model.setSpeciality(data.getLabel());
-            System.out.println(model.getSpeciality());
             var response = coachServices.update(coach_id, model);
             if (response.getStatus() == HttpStatus.OK) {
                 return new ResponseEntity<>("Coach was added with Success", HttpStatus.OK);

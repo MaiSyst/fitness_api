@@ -45,7 +45,7 @@ public class CustomerServices implements ICustomerServices {
     }
 
     @Override
-    public MaiResponse<CustomerModel> insertWithSubscription(String typeSubscription, String activity_id, String roomId, CustomerModel model) {
+    public MaiResponse<CustomerSubscribeResponse> insertWithSubscription(String typeSubscription, String activity_id, String roomId, CustomerModel model) {
         try {
             var subscriptionResponse = subscriptionServices.findByType(typeSubscription);
             var activityModelMaiResponse = activityServices.findById(activity_id);
@@ -68,7 +68,24 @@ public class CustomerServices implements ICustomerServices {
                 var subscribeRes = subscribeServices.insert(new SubscribeModel(moment[0], moment[1], true, customerResponse, subscriptionResponse.getData()));
                 if (subscribeRes.getStatus() == HttpStatus.OK) {
                     jdbcTemplate.update("INSERT INTO concern VALUES(?,?)", activity_id, subscriptionResponse.getData().getSubscriptionId());
-                    return new MaiResponse.MaiSuccess<>(customerResponse, HttpStatus.OK);
+                    final List<SubscribeResponse> subscribeResponseList = new ArrayList<>();
+                    subscribeResponseList.add(new SubscribeResponse(
+                            subscribeRes.getData().getSubscribeId(),
+                            subscribeRes.getData().getDateStart(),
+                            subscribeRes.getData().getDateEnd(),
+                            subscribeRes.getData().getIsActive(),
+                            subscribeRes.getData().getSubscription().getType().toString()
+                    ));
+                    return new MaiResponse.MaiSuccess<>(new CustomerSubscribeResponse(
+                            customerResponse.getCustomerId(),
+                            customerResponse.getIdentityEMF(),
+                            customerResponse.getFirstName(),
+                            customerResponse.getLastName(),
+                            customerResponse.getYearOfBirth(),
+                            customerResponse.getAddress(),
+                            roomModelMaiResponse.getData().getRoomName(),
+                            subscribeResponseList
+                    ), HttpStatus.OK);
                 } else {
                     return new MaiResponse.MaiError<>(subscribeRes.getMessage(), HttpStatus.NOT_FOUND);
                 }
@@ -134,6 +151,18 @@ public class CustomerServices implements ICustomerServices {
                                 );
                             }
                         });
+                        if(subscribeResponse.isEmpty()){
+                            var item=responseSubscribes.getData().get(responseSubscribes.getData().size()-1);
+                            subscribeResponse.add(
+                                        new SubscribeResponse(
+                                                item.getSubscribeId(),
+                                                item.getDateStart(),
+                                                item.getDateEnd(),
+                                                item.getIsActive(),
+                                                item.getSubscription().getType().toString()
+                                        )
+                                );
+                        }
                         var customerSubscribe = new CustomerSubscribeResponse(
                                 customerResponse.get().getCustomerId(),
                                 customerResponse.get().getIdentityEMF(),
@@ -145,8 +174,11 @@ public class CustomerServices implements ICustomerServices {
                                 subscribeResponse
                         );
                         var responseValidate = MaiUtils.checkValidateAllSubscribe(responseSubscribes.getData());
-                        subscribeServices.insertMany(responseValidate);
-                        return new MaiResponse.MaiSuccess<>(customerSubscribe, HttpStatus.OK);
+                        var result=subscribeServices.insertMany(responseValidate);
+                        if(result.getStatus()==HttpStatus.OK) {
+                            return new MaiResponse.MaiSuccess<>(customerSubscribe, HttpStatus.OK);
+                        }
+                        return new MaiResponse.MaiError<>(result.getMessage(), result.getStatus());
                     } else {
                         return new MaiResponse.MaiError<>(responseSubscribes.getMessage(), responseSubscribes.getStatus());
                     }
@@ -223,6 +255,18 @@ public class CustomerServices implements ICustomerServices {
                             ));
                         }
                     });
+                    if(subscribeResponses.isEmpty()){
+                            var itemData=responseSubscribes.get(responseSubscribes.size()-1);
+                            subscribeResponses.add(
+                                        new SubscribeResponse(
+                                                itemData.getSubscribeId(),
+                                                itemData.getDateStart(),
+                                                itemData.getDateEnd(),
+                                                itemData.getIsActive(),
+                                                itemData.getSubscription().getType().toString()
+                                        )
+                                );
+                        }
                     return new CustomerSubscribeResponse(
                             item.getCustomerId(),
                             item.getIdentityEMF(),
@@ -244,10 +288,6 @@ public class CustomerServices implements ICustomerServices {
         }
     }
 
-    @Override
-    public MaiResponse<String> insertMany(List<CustomerModel> models) {
-        return null;
-    }
 
     @Override
     public MaiResponse<String> deleteMany(List<String> ids) {
@@ -283,19 +323,28 @@ public class CustomerServices implements ICustomerServices {
 
 
     @Override
-    public MaiResponse<CustomerModel> update(String customerId, String roomId, CustomerModel model) {
+    public MaiResponse<CustomerModel> update(String customerId, String subscriptionId, String roomId, CustomerModel model) {
         try {
             var responseCustomer = customerRepository.findById(customerId);
 
             if (responseCustomer.isPresent()) {
                 var room = roomServices.findById(roomId);
-                responseCustomer.get().setAddress(model.getAddress());
-                responseCustomer.get().setFirstName(model.getFirstName());
-                responseCustomer.get().setLastName(model.getLastName());
-                responseCustomer.get().setYearOfBirth(model.getYearOfBirth());
-                responseCustomer.get().setRoom(room.getData());
-                customerRepository.save(responseCustomer.get());
-                return new MaiResponse.MaiSuccess<>(responseCustomer.get(), HttpStatus.OK);
+                var subscription = subscriptionServices.findByType(subscriptionId);
+                var subscribes = subscribeServices.findAllByCustomerAndIsActive(responseCustomer.get(), true);
+                if (subscribes.getStatus() == HttpStatus.OK&&subscription.getStatus()==HttpStatus.OK) {
+                    responseCustomer.get().setAddress(model.getAddress());
+                    responseCustomer.get().setFirstName(model.getFirstName());
+                    responseCustomer.get().setLastName(model.getLastName());
+                    responseCustomer.get().setYearOfBirth(model.getYearOfBirth());
+                    responseCustomer.get().setRoom(room.getData());
+                    subscribes.getData().get(0).setSubscription(subscription.getData());
+                    subscribeServices.update(subscribes.getData().get(0).getSubscribeId(),subscribes.getData().get(0));
+
+                    customerRepository.save(responseCustomer.get());
+                    return new MaiResponse.MaiSuccess<>(responseCustomer.get(), HttpStatus.OK);
+                }
+                return new MaiResponse.MaiError<>("Customer unsubscribe.", HttpStatus.NOT_FOUND);
+
             } else {
                 return new MaiResponse.MaiError<>("Customer not found.", HttpStatus.NOT_FOUND);
             }
@@ -322,9 +371,14 @@ public class CustomerServices implements ICustomerServices {
                             responseCustomer.get(),
                             subscriptionResponse.getData()
                     ));
-                    subscribeServices.insertMany(subsc.getData());
+                    var result=subscribeServices.insertMany(subsc.getData());
+                    if (result.getStatus()==HttpStatus.OK){
+                        return new MaiResponse.MaiSuccess<>(responseCustomer.get(), HttpStatus.OK);
+                    }
+                    return new MaiResponse.MaiError<>(result.getMessage(), result.getStatus());
                 }
-                return new MaiResponse.MaiSuccess<>(responseCustomer.get(), HttpStatus.OK);
+                return new MaiResponse.MaiError<>(subsc.getMessage(), subsc.getStatus());
+
             } else {
                 return new MaiResponse.MaiError<>("Customer not found.", HttpStatus.NOT_FOUND);
             }

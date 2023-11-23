@@ -6,9 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.sql.Date;
 import java.sql.Time;
-import java.util.UUID;
 
 @Entity(name = "planning")
 public class PlanningModel {

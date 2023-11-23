@@ -15,8 +15,6 @@ public sealed interface IServices<T,TID> permits IActivityServices, ICoachServic
 
     MaiResponse<List<T>> fetchAll();
 
-    MaiResponse<String> insertMany(List<T> models);
-
     MaiResponse<String> deleteMany(List<TID> ids);
     MaiResponse<T> update(TID id, T model);
 }

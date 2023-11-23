@@ -5,25 +5,20 @@ import com.maisyst.fitness.dao.repositories.IActivityRepository;
 import com.maisyst.fitness.models.*;
 import com.maisyst.fitness.utils.MaiResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
-import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
-import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
 @Service
 public class ActivityServices implements IActivityServices {
     private final IActivityRepository activityRepository;
     private final SubscriptionServices subscriptionServices;
-    private final JdbcTemplate jdbcTemplate;
 
-    public ActivityServices(IActivityRepository activityRepository, SubscriptionServices subscriptionServices, JdbcTemplate jdbcTemplate) {
+    public ActivityServices(IActivityRepository activityRepository,
+                            SubscriptionServices subscriptionServices) {
         this.activityRepository = activityRepository;
         this.subscriptionServices = subscriptionServices;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -100,60 +95,6 @@ public class ActivityServices implements IActivityServices {
             return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
         } catch (Exception ex) {
            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Override
-    public MaiResponse<List<ActivityModel>> fetchAllWithCoachSubsPlanning() {
-//        try {
-//            final String query = "SELECT * from activity";
-//            var response = jdbcTemplate.query(query, (rs, rows) -> {
-//                final String queryCoach = "SELECT * from coach WHERE coach.activity_id ="+rs.getInt("activity_id");
-//                final String querySub = "SELECT * from subscription,concern WHERE concern.subscription_id = subscription.subscription_id and concern.activity_id="+rs.getInt("activity_id");
-//                final String queryPlanning = "SELECT * from planning,room WHERE room.room_id=planning.room_id and planning.activity_id ="+rs.getInt("activity_id");
-//                List<CoachModel> coachModel = jdbcTemplate.query(queryCoach, (rsCoach, rows1) ->
-//                        new CoachModel(
-//                                rsCoach.getString("coach_id"),
-//                                rsCoach.getString("first_name"),
-//                                rsCoach.getString("last_name"),
-//                                rsCoach.getString("phone"),
-//                                rsCoach.getString("address"),
-//                                rsCoach.getString("speciality")
-//                        )
-//                );
-//                List<SubscriptionModel> subscriptionModel = jdbcTemplate.query(querySub, (rsSub, rows1) ->
-//                        new SubscriptionModel(
-//                                rsSub.getString("subscription_id"),
-//                                rsSub.getString("label"),
-//                                rsSub.getDouble("price"),
-//                                stringToTypeSubscription(rsSub.getString("type"))
-//                        )
-//                );
-//                List<PlanningModel> planningModel = jdbcTemplate.query(queryPlanning, (rsPlanning, rows1) -> new PlanningModel(
-//                        rsPlanning.getString("planning_id"),
-//                        stringToMaiDay(rsPlanning.getString("day")),
-//                        rsPlanning.getTime("start_time"),
-//                        rsPlanning.getTime("end_time"),
-//                        new RoomModel(rsPlanning.getString("room_id"), rsPlanning.getString("room_name"))
-//                ));
-//                return new ActivityModel(rs.getString("activity_id"),
-//                        rs.getString("label"), rs.getString("description"),
-//                        coachModel, subscriptionModel, planningModel);
-//            });
-//            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
-//        } catch (Exception ex) {
-//            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-        return null;
-    }
-
-    @Override
-    public MaiResponse<String> insertMany(List<ActivityModel> models) {
-        try {
-            activityRepository.saveAll(models);
-            return new MaiResponse.MaiSuccess<>("Activities has been added", HttpStatus.OK);
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

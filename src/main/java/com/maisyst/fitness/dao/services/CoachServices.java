@@ -82,17 +82,6 @@ public class CoachServices implements ICoachServices {
            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-    @Override
-    public MaiResponse<String> insertMany(List<CoachModel> models) {
-        try {
-            coachRepository.saveAll(models);
-            return new MaiResponse.MaiSuccess<>("Activities was added", HttpStatus.OK);
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @Override
     public MaiResponse<String> deleteMany(List<String> ids) {
         try {
@@ -100,14 +89,6 @@ public class CoachServices implements ICoachServices {
             return new MaiResponse.MaiSuccess<>("Coach was deleted", HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-    public MaiResponse<List<CoachModel>> fetchWithAll() {
-       try {
-           var response=coachRepository.findAll();
-            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
-        } catch (Exception ex) {
-           return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

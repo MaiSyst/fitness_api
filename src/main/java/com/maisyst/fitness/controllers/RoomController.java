@@ -1,7 +1,6 @@
 package com.maisyst.fitness.controllers;
 
 import com.maisyst.fitness.dao.services.RoomServices;
-import com.maisyst.fitness.dao.services.UserService;
 import com.maisyst.fitness.models.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +13,9 @@ import java.util.List;
 @RequestMapping("/api/room")
 public class RoomController {
     private final RoomServices roomServices;
-    private final UserService userService;
 
-    public RoomController(RoomServices roomServices, UserService userService) {
+    public RoomController(RoomServices roomServices) {
         this.roomServices = roomServices;
-        this.userService = userService;
     }
 
     @PostMapping("/add")
@@ -43,7 +40,6 @@ public class RoomController {
     @GetMapping("/fetchAll")
     public ResponseEntity<List<RoomModel>> fetchAll() {
         var response = roomServices.fetchAll();
-        System.out.println(response);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), response.getStatus());
         } else {

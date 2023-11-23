@@ -22,32 +22,15 @@ public class UserService implements IUserService {
     private final IUserRepository repository;
     private final MaiJWTConfig maiJWTConfig;
     private final MaiJwtDecoder maiJwtDecoder;
-    private final CustomerServices customerServices;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserService(IUserRepository repository, MaiJWTConfig maiJWTConfig, MaiJwtDecoder maiJwtDecoder, CustomerServices customerServices, JdbcTemplate jdbcTemplate) {
+    public UserService(IUserRepository repository, MaiJWTConfig maiJWTConfig, MaiJwtDecoder maiJwtDecoder, JdbcTemplate jdbcTemplate) {
         this.repository = repository;
         this.maiJWTConfig = maiJWTConfig;
         this.maiJwtDecoder = maiJwtDecoder;
-        this.customerServices = customerServices;
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    @Override
-    public MaiResponse<UserModel> findByUsername(String username) {
-        try {
-            var response = repository.findByUsername(username);
-            if (response.isPresent()) {
-                return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
-            } else {
-                return new MaiResponse.MaiError<>("User doesn't exist", HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @Override
     public MaiResponse<UserModel> findById(String userId) {
         try {
@@ -80,7 +63,6 @@ public class UserService implements IUserService {
     @Override
     public MaiResponse<UserModel> updatePassword(String username, String newPassword) {
         try {
-            System.out.println("UPDATE_USER="+username+" UPDATE_PWD="+newPassword);
             var response = repository.findByUsernameAndIsActive(username,true);
             if (response.isPresent()) {
                 response.get().setPassword(new BCryptPasswordEncoder().encode(newPassword));

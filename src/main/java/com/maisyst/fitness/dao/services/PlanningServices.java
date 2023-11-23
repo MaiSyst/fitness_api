@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
@@ -73,12 +71,6 @@ public class PlanningServices implements IPlanningServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_GATEWAY);
         }
     }
-
-    @Override
-    public MaiResponse<String> insertMany(List<PlanningModel> models) {
-        return null;
-    }
-
     @Override
     public MaiResponse<String> deleteMany(List<String> ids) {
         try {
@@ -167,30 +159,6 @@ public class PlanningServices implements IPlanningServices {
                 activityModel
         );
     }
-
-    @Override
-    public MaiResponse<PlanningModel> findAllWithActivityAndRoomByPlanningId(String planningId) {
-        try {
-            String query = "SELECT * FROM planning,room,activity WHERE planning.planning_id=? and planning.activity_id=activity.activity_id and room.room_id=planning.room_id";
-            var responsePlanningModel = jdbcTemplate.queryForObject(query, (rs, rows) ->
-                    commonPartFindAllWithActivityAndRoom(
-                            rs.getString("activity_id"),
-                            rs.getString("label"),
-                            rs.getString("description"),
-                            rs.getString("room_id"),
-                            rs.getString("room_name"),
-                            stringToMaiDay(rs.getString("day")),
-                            rs.getTime("start_time"),
-                            rs.getTime("end_time"),
-                            rs.getString("planning_id")
-                    ), planningId);
-            return new MaiResponse.MaiSuccess<>(responsePlanningModel, HttpStatus.OK);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
-        }
-    }
-
     @Override
     public MaiResponse<List<PlanningModel>> findAllWithActivityAndRoom() {
         try {
@@ -209,7 +177,6 @@ public class PlanningServices implements IPlanningServices {
                     ));
             return new MaiResponse.MaiSuccess<>(responsePlanningModel, HttpStatus.OK);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
     }
@@ -223,19 +190,6 @@ public class PlanningServices implements IPlanningServices {
                     result.getActivity().getLabel(), result.getRoom().getRoomName())).toList();
             return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
 
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Override
-    public MaiResponse<List<PlanningResponse>> searchIt(String query) {
-        try {
-            var response = planningRepository.searchIt(query);
-            List<PlanningResponse> data = new ArrayList<>();
-            response.forEach(re -> data.add(new PlanningResponse(re.getPlanningId(), re.getDay(),
-                    re.getStartTime(), re.getEndTime(), re.getActivity().getLabel(), re.getRoom().getRoomName())));
-            return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

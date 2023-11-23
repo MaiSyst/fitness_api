@@ -65,16 +65,6 @@ public class SubscriptionServices implements ISubscriptionServices {
     }
 
     @Override
-    public MaiResponse<String> insertMany(List<SubscriptionModel> models) {
-        try {
-            subscriptionRepository.saveAll(models);
-            return new MaiResponse.MaiSuccess<>("Subscriptions has been added", HttpStatus.OK);
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Override
     public MaiResponse<String> deleteMany(List<String> ids) {
        try {
             subscriptionRepository.deleteAllById(ids);

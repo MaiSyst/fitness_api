@@ -3,15 +3,12 @@ package com.maisyst.fitness.controllers;
 import com.maisyst.fitness.dao.services.PlanningServices;
 import com.maisyst.fitness.models.DeleteManyRequest;
 import com.maisyst.fitness.models.PlanningModel;
-import com.maisyst.fitness.models.PlanningResponse;
-import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/planning")

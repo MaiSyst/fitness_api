@@ -8,6 +8,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.maisyst.fitness.security.env.MaiJWTProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Component
 public class MaiJwtDecoder {
     private final MaiJWTProperties maiJWTProperties;
@@ -24,7 +27,7 @@ public class MaiJwtDecoder {
                 .build();
             decodedJWT=jwtVerifier.verify(token);
         }catch (JWTVerificationException ex){
-            System.out.println(ex.getMessage());
+            Logger.getLogger(MaiJwtDecoder.class.getName()).log(Level.SEVERE,ex.getMessage());
         }
         return decodedJWT;
     }

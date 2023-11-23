@@ -9,9 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
-import static com.maisyst.fitness.utils.MaiUtils.stringToMaiDay;
 import static com.maisyst.fitness.utils.MaiUtils.stringToTypeSubscription;
 
 @Service
@@ -103,17 +101,6 @@ public class SubscribeServices implements ISubscribeServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-    @Override
-    public MaiResponse<SubscribeModel> updateCustomerSubscription(String subscribeId, SubscriptionModel model) {
-        return null;
-    }
-
-    @Override
-    public MaiResponse<SubscribeModel> updateSubscribeCustomer(String subscribeId, CustomerModel model) {
-        return null;
-    }
-
     @Override
     public MaiResponse<List<SubscribeModel>> findAllWithSubscriptionAndCustomer() {
         try {
@@ -132,8 +119,8 @@ public class SubscribeServices implements ISubscribeServices {
                         SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));
                         List<ActivityModel> activities = jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id=?",
                                 (rs1, rows1) -> new ActivityModel(rs1.getString("activity_id"), rs1.getString("label"), rs1.getString("description")), rs.getString("subscription_id"));
-//
-            subscriptionModel.setActivities(activities);
+
+                        subscriptionModel.setActivities(activities);
                         return new SubscribeModel(
                                 rs.getString("subscribe_id"),
                                 rs.getDate("date_start"),
@@ -147,12 +134,22 @@ public class SubscribeServices implements ISubscribeServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
     }
-@Override
-    public MaiResponse<List<SubscribeModel>>findAllByCustomer(CustomerModel customer){
+
+    @Override
+    public MaiResponse<List<SubscribeModel>> findAllByCustomer(CustomerModel customer) {
         try {
-            var response=subscribeRepository.findAllByCustomer(customer);
+            var response = subscribeRepository.findAllByCustomer(customer);
             return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
-        }catch(Exception ex){
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
+        }
+    }
+    @Override
+    public MaiResponse<List<SubscribeModel>> findAllByCustomerAndIsActive(CustomerModel customer,boolean isActive) {
+        try {
+            var response = subscribeRepository.findAllByCustomerAndIsActive(customer,isActive);
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
     }

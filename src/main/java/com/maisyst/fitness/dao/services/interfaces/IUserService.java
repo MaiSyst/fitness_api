@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface IUserService {
-    MaiResponse<UserModel> findByUsername(String username);
     MaiResponse<UserModel> findById(String userId);
     MaiResponse<UserModel> disableOrEnableUsername(String username, boolean isActive);
     MaiResponse<UserModel> updatePassword(String username, String model);

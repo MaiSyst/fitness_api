@@ -37,21 +37,8 @@ public class RoomServices implements IRoomServices {
     public MaiResponse<String> deleteById(String id) {
         try {
             roomRepository.deleteAllById(List.of(id));
-            System.out.println(id);
             return new MaiResponse.MaiSuccess<>("Room have been deleted", HttpStatus.OK);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Override
-    public MaiResponse<String> deleteByRoomName(String roomName) {
-        try {
-            roomRepository.deleteByRoomName(roomName);
-            return new MaiResponse.MaiSuccess<>("Room have been deleted", HttpStatus.OK);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -142,7 +129,6 @@ public class RoomServices implements IRoomServices {
             });
             return new MaiResponse.MaiSuccess<>(data, HttpStatus.OK);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -153,16 +139,6 @@ public class RoomServices implements IRoomServices {
             var response = jdbcTemplate.query("SELECT * FROM room WHERE room.manager_id is null",
                     (rs, rowNum) -> new RoomNoManager(rs.getString("room_id"), rs.getString("room_name")));
             return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
-        } catch (Exception ex) {
-            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Override
-    public MaiResponse<String> insertMany(List<RoomModel> models) {
-        try {
-            roomRepository.saveAll(models);
-            return new MaiResponse.MaiSuccess<>("Rooms has been added", HttpStatus.OK);
         } catch (Exception ex) {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

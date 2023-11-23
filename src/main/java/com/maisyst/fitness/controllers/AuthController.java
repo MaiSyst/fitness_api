@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -97,7 +96,6 @@ public class AuthController {
     }
     @PostMapping("/disableOrEnableAccount/{username}")
     public ResponseEntity<String> disableOrEnableAccount(@PathVariable String username, @RequestBody AuthRequestDisableOrEnable auth) {
-        System.out.println("AUTH="+auth.isActive());
         var result = userService.disableOrEnableUsername(username, auth.isActive());
         if (result.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>("Success", HttpStatus.OK);
