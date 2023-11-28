@@ -326,7 +326,6 @@ public class CustomerServices implements ICustomerServices {
     public MaiResponse<CustomerModel> update(String customerId, String subscriptionId, String roomId, CustomerModel model) {
         try {
             var responseCustomer = customerRepository.findById(customerId);
-
             if (responseCustomer.isPresent()) {
                 var room = roomServices.findById(roomId);
                 var subscription = subscriptionServices.findByType(subscriptionId);
@@ -338,6 +337,9 @@ public class CustomerServices implements ICustomerServices {
                     responseCustomer.get().setYearOfBirth(model.getYearOfBirth());
                     responseCustomer.get().setRoom(room.getData());
                     subscribes.getData().get(0).setSubscription(subscription.getData());
+                    var moment = getDateSubscription(subscription.getData().getType());
+                    subscribes.getData().get(0).setDateStart(moment[0]);
+                    subscribes.getData().get(0).setDateEnd(moment[1]);
                     subscribeServices.update(subscribes.getData().get(0).getSubscribeId(),subscribes.getData().get(0));
 
                     customerRepository.save(responseCustomer.get());

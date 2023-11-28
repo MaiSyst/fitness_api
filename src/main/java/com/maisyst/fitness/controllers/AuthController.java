@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -34,11 +37,11 @@ public class AuthController {
     @PostMapping("/signIn")
     public ResponseEntity<Object> signIn(@RequestBody AuthRequest authRequest) {
         var response = userService.signIn(authRequest);
-            if (response.getStatus() == HttpStatus.OK) {
-                return new ResponseEntity<>(response.getData(), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(response.getMessage(), response.getStatus());
-            }
+        if (response.getStatus() == HttpStatus.OK) {
+            return new ResponseEntity<>(response.getData(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response.getMessage(), response.getStatus());
+        }
 
     }
 
@@ -68,32 +71,66 @@ public class AuthController {
         }
 
     }
-    @PostMapping("/updatePassword/{identityEMF}")
-    public ResponseEntity<String> updatePassword(@RequestBody RequestSingle<String> request,@PathVariable String identityEMF) {
-        var userModel=userService.updatePassword(identityEMF,request.arg());
-        if (userModel.getStatus()==HttpStatus.OK){
-            return new ResponseEntity<>("Password updated", userModel.getStatus());
-        }else{
-             return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
-        }
-    }
-    @PutMapping("/update/{identityEMF}")
-    public ResponseEntity<String> update(@RequestBody AuthRequestCreated model,@PathVariable String identityEMF) {
-        UserModel users=new UserModel();
-        users.setFirstName(model.firstName());
-        users.setLastName(model.lastName());
-        users.setAddress(model.address());
-        users.setPhoneNumber(model.phoneNumber());
-        users.setDate(model.date());
-        users.setPassword(model.password());
 
-        var userModel=userService.update(identityEMF,users);
-        if (userModel.getStatus()==HttpStatus.OK){
-            return new ResponseEntity<>("User updated", userModel.getStatus());
-        }else{
-             return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
+    @PostMapping("/updatePassword/{identityEMF}")
+    public ResponseEntity<String> updatePassword(@RequestBody RequestSingle<String> request, @PathVariable String identityEMF) {
+        var userModel = userService.updatePassword(identityEMF, request.arg());
+        if (userModel.getStatus() == HttpStatus.OK) {
+            return new ResponseEntity<>("Password updated", userModel.getStatus());
+        } else {
+            return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
         }
     }
+
+    @PutMapping("/update/{identityEMF}")
+    public ResponseEntity<String> update(@RequestBody AuthRequestCreated model, @PathVariable String identityEMF) {
+        var userModel = userService.findByUsername(identityEMF);
+        if (userModel.getStatus() == HttpStatus.OK) {
+            if (!model.roomId().equalsIgnoreCase("room available")){
+                var result = userService.delete(Collections.singletonList(userModel.getData().getUserId()));
+                if (result.getStatus() == HttpStatus.OK) {
+                    var roomModel = roomServices.findById(model.roomId());
+                    if (roomModel.getStatus() == HttpStatus.OK) {
+                        var response = userService.addUpdate(new UserModel(
+                                userModel.getData().getUsername(),
+                                model.firstName(),
+                                model.lastName(),
+                                model.date(),
+                                model.address(),
+                                model.phoneNumber(),
+                                roomModel.getData(),
+                                userModel.getData().getPassword(), true, AuthRole.USER));
+
+                        if (response.getStatus() == HttpStatus.OK) {
+                            roomModel.getData().setManager(response.getData());
+                            roomServices.update(roomModel.getData().getRoomId(), roomModel.getData());
+                            return new ResponseEntity<>("User added with success", HttpStatus.OK);
+                        } else {
+                            return new ResponseEntity<>(response.getMessage(), response.getStatus());
+                        }
+                    } else {
+                        return new ResponseEntity<>(roomModel.getMessage(), roomModel.getStatus());
+                    }
+                } else {
+                    return new ResponseEntity<>(result.getMessage(), userModel.getStatus());
+                }
+            } else {
+                UserModel users = new UserModel();
+                users.setFirstName(model.firstName());
+                users.setLastName(model.lastName());
+                users.setAddress(model.address());
+                users.setPhoneNumber(model.phoneNumber());
+                users.setDate(model.date());
+                users.setPassword(model.password());
+                userService.update(identityEMF, users);
+            }
+            return new ResponseEntity<>("User updated", userModel.getStatus());
+        } else {
+            return new ResponseEntity<>(userModel.getMessage(), userModel.getStatus());
+        }
+
+    }
+
     @PostMapping("/disableOrEnableAccount/{username}")
     public ResponseEntity<String> disableOrEnableAccount(@PathVariable String username, @RequestBody AuthRequestDisableOrEnable auth) {
         var result = userService.disableOrEnableUsername(username, auth.isActive());

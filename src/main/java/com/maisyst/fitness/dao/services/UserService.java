@@ -59,7 +59,18 @@ public class UserService implements IUserService {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+ public MaiResponse<UserModel> findByUsername(String username) {
+        try {
+            var response = repository.findByUsername(username);
+            if (response.isPresent()) {
+                return new MaiResponse.MaiSuccess<>(response.get(), HttpStatus.OK);
+            } else {
+                return new MaiResponse.MaiError<>("User doesn't exist", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @Override
     public MaiResponse<UserModel> updatePassword(String username, String newPassword) {
         try {
@@ -80,6 +91,14 @@ public class UserService implements IUserService {
     public MaiResponse<UserModel> add(UserModel model) {
         try {
             model.setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
+            var response = repository.save(model);
+            return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    public MaiResponse<UserModel> addUpdate(UserModel model) {
+        try {
             var response = repository.save(model);
             return new MaiResponse.MaiSuccess<>(response, HttpStatus.OK);
         } catch (Exception ex) {
@@ -184,7 +203,10 @@ public class UserService implements IUserService {
                 response.get().setDate(model.getDate());
                 response.get().setAddress(model.getAddress());
                 response.get().setUsername(model.getFirstName()+"@"+response.get().getUsername().split("@")[1]);
-                if (!model.getPassword().isBlank() && model.getPassword() == null) {
+                if(model.getRoom()!=null){
+                    response.get().setRoom(model.getRoom());
+                }
+                if (!model.getPassword().isBlank() && model.getPassword() != null) {
                     response.get().setPassword(new BCryptPasswordEncoder().encode(model.getPassword()));
                 }
                 return new MaiResponse.MaiSuccess<>(repository.save(response.get()), HttpStatus.OK);
