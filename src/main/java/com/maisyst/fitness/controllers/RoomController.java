@@ -67,8 +67,8 @@ public class RoomController {
     }
 
     @GetMapping("/fetchById/{room_id}")
-    public ResponseEntity<RoomModel> fetch(@PathVariable String room_id) {
-        var response = roomServices.findById(room_id);
+    public ResponseEntity<RoomWithTotalSubscribeResponse> fetch(@PathVariable String room_id) {
+        var response = roomServices.findRoomById(room_id);
         if (response.getStatus() == HttpStatus.OK) {
             return new ResponseEntity<>(response.getData(), response.getStatus());
         } else {

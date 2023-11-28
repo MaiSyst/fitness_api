@@ -180,6 +180,28 @@ public class PlanningServices implements IPlanningServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
         }
     }
+public MaiResponse<List<PlanningModel>> findAllWithActivityAndRoom(String roomId) {
+        try {
+            String query = "SELECT * FROM planning,room,activity WHERE planning.activity_id=activity.activity_id and room.room_id=?";
+            var responsePlanningModel = jdbcTemplate.query(query, (rs, rows) ->
+                    commonPartFindAllWithActivityAndRoom(
+                            rs.getString("activity_id"),
+                            rs.getString("label"),
+                            rs.getString("description"),
+                            rs.getString("room_id"),
+                            rs.getString("room_name"),
+                            stringToMaiDay(rs.getString("day")),
+                            rs.getTime("start_time"),
+                            rs.getTime("end_time"),
+                            rs.getString("planning_id")
+                    ),
+                    roomId
+            );
+            return new MaiResponse.MaiSuccess<>(responsePlanningModel, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.OK);
+        }
+    }
 
     @Override
     public MaiResponse<List<PlanningResponse>> fetchAll() {

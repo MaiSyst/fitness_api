@@ -56,7 +56,23 @@ public class RoomServices implements IRoomServices {
             return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+public MaiResponse<RoomWithTotalSubscribeResponse> findRoomById(String id) {
+        try {
+            var response = roomRepository.findById(id);
+            if (response.isPresent()) {
+                var result=new RoomWithTotalSubscribeResponse(
+                        response.get().getRoomId(),
+                        response.get().getRoomName(),
+                        0
+                );
+                return new MaiResponse.MaiSuccess<>(result, HttpStatus.OK);
+            } else {
+                return new MaiResponse.MaiError<>("Room is empty", HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception ex) {
+            return new MaiResponse.MaiError<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @Override
     public MaiResponse<List<RoomWithTotalSubscribeResponse>> fetchRoomWithTotalSubscribeModel() {
         try {

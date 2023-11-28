@@ -10,4 +10,5 @@ import java.util.List;
 public non-sealed interface IRoomServices extends IServices<RoomModel, String>{
     MaiResponse<List<RoomWithTotalSubscribeResponse>>fetchRoomWithTotalSubscribeModel();
     MaiResponse<List<RoomNoManager>> findAllRoomNoManager();
+    MaiResponse<RoomWithTotalSubscribeResponse> findRoomById(String roomId);
 }
