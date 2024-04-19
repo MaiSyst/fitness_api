@@ -61,7 +61,7 @@ public final class MaiUtils {
         };
     }
 
-    public static double getPriceSubscription(TypeSubscription type) {
+    public static int getPriceSubscription(TypeSubscription type) {
         return switch (type) {
             case GOLD -> 100_000;
             case PRIME -> 60_000;

@@ -40,7 +40,7 @@ public class PlanningController {
         }
     }
 
-    @GetMapping("/findAllWithActivityAndRoom")
+    @GetMapping("/findAllWithActivifindAllWithActivityAndRoomtyAndRoom")
     public ResponseEntity<List<PlanningModel>> findAllWithActivityAndRoom() {
         var response = planningServices.findAllWithActivityAndRoom();
         if (response.getStatus() == HttpStatus.OK) {

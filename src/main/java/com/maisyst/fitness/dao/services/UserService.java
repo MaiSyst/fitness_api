@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,13 +160,13 @@ public class UserService implements IUserService {
             return new MaiResponse.MaiError<>("Invalid token", HttpStatus.FORBIDDEN);
         }
 
-        return new MaiResponse.MaiSuccess<>(new HashMap<>() {{
+        return new MaiResponse.MaiSuccess<>(Collections.unmodifiableMap(new HashMap<>() {{
             put("username", response.getClaim("username").asString());
             put("role", response.getClaim("role").asString());
             put("isActive", response.getClaim("isAccountActivate").asBoolean());
             put("token", token);
             put("roomId", response.getClaim("roomId").asString());
-        }}, HttpStatus.OK);
+        }}), HttpStatus.OK);
     }
 
     public MaiResponse<List<UserResponse>> fetchAll() {

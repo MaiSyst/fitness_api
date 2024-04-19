@@ -116,7 +116,7 @@ public class SubscribeServices implements ISubscribeServices {
                                 rs.getString("identity_emf")
                         );
 
-                        SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getDouble("price"), stringToTypeSubscription(rs.getString("type")));
+                        SubscriptionModel subscriptionModel = new SubscriptionModel(rs.getString("subscription_id"), rs.getString("label"), rs.getInt("price"), stringToTypeSubscription(rs.getString("type")));
                         List<ActivityModel> activities = jdbcTemplate.query("SELECT * FROM concern,activity WHERE concern.activity_id=activity.activity_id AND concern.subscription_id=?",
                                 (rs1, rows1) -> new ActivityModel(rs1.getString("activity_id"), rs1.getString("label"), rs1.getString("description")), rs.getString("subscription_id"));
 

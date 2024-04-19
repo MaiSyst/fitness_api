@@ -17,7 +17,7 @@ public class SubscriptionModel {
     @Column(nullable = false)
     private String label;
     @Column(nullable = false)
-    private double price;
+    private int price;
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false,unique = true)
     private TypeSubscription type=TypeSubscription.GOLD;
@@ -27,7 +27,7 @@ public class SubscriptionModel {
     private List<SubscribeModel> subscribes=new ArrayList<>();
     public SubscriptionModel() {}
 
-    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
+    public SubscriptionModel(String subscriptionId, String label, int price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
         this.subscriptionId = subscriptionId;
         this.label = label;
         this.price = price;
@@ -36,7 +36,7 @@ public class SubscriptionModel {
         this.subscribes = subscribes;
     }
 
-    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type, List<ActivityModel> activities) {
+    public SubscriptionModel(String subscriptionId, String label, int price, TypeSubscription type, List<ActivityModel> activities) {
         this.subscriptionId = subscriptionId;
         this.label = label;
         this.price = price;
@@ -44,13 +44,13 @@ public class SubscriptionModel {
         this.activities = activities;
     }
 
-    public SubscriptionModel(String subscriptionId, String label, double price, TypeSubscription type) {
+    public SubscriptionModel(String subscriptionId, String label, int price, TypeSubscription type) {
         this.subscriptionId = subscriptionId;
         this.label = label;
         this.price = price;
         this.type = type;
     }
-     public SubscriptionModel(String label, double price, TypeSubscription type) {
+     public SubscriptionModel(String label, int price, TypeSubscription type) {
         this.label = label;
         this.price = price;
         this.type = type;
@@ -58,7 +58,7 @@ public class SubscriptionModel {
     public SubscriptionModel(TypeSubscription type) {
         this.type = type;
     }
-    public SubscriptionModel(String label, double price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
+    public SubscriptionModel(String label, int price, TypeSubscription type, List<ActivityModel> activities, List<SubscribeModel> subscribes) {
         this.label = label;
         this.price = price;
         this.type = type;
@@ -69,11 +69,11 @@ public class SubscriptionModel {
         return subscriptionId;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

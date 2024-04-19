@@ -6,7 +6,6 @@ import com.maisyst.fitness.dao.repositories.IUserRepository;
 import com.maisyst.fitness.utils.AuthRole;
 import com.maisyst.fitness.models.SubscriptionModel;
 import com.maisyst.fitness.models.UserModel;
-import com.maisyst.fitness.utils.MaiUID;
 import com.maisyst.fitness.utils.MaiUtils;
 import com.maisyst.fitness.utils.TypeSubscription;
 import org.springframework.boot.SpringApplication;

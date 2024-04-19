@@ -135,7 +135,7 @@ public class PlanningServices implements IPlanningServices {
                 (rsCoach, rowsCoach) -> new SubscriptionModel(
                         rsCoach.getString("subscription_id"),
                         rsCoach.getString("label"),
-                        rsCoach.getDouble("price"),
+                        rsCoach.getInt("price"),
                         MaiUtils.stringToTypeSubscription(rsCoach.getString("type"))
                 ),
                 activityId
